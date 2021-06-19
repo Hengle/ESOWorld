@@ -11,8 +11,9 @@ using Debug = UnityEngine.Debug;
 
 public class EsoWorldEditorWindow : EditorWindow
 {
-    public GameObject fixturePrefab;
     uint worldID;
+    int pathCount;
+    Dictionary<ulong, string> paths;
 
     [MenuItem("Window/ESOWorld")]
     static void Init() {
@@ -21,27 +22,27 @@ public class EsoWorldEditorWindow : EditorWindow
     }
 
     private void OnGUI() {
-        fixturePrefab = (GameObject) EditorGUILayout.ObjectField(fixturePrefab, typeof(UnityEngine.Object), true);
-        worldID = (uint)EditorGUILayout.IntField((int)worldID);
-        if(GUILayout.Button("Test")) {
-            Test(worldID);
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Load Paths")) {
+            paths = Util.LoadWorldFiles();
+            pathCount = paths.Count;
         }
+        EditorGUILayout.IntField(pathCount);
+        EditorGUILayout.EndHorizontal();
+        worldID = (uint)EditorGUILayout.IntField("World:", (int)worldID);
         if (GUILayout.Button("Import Models")) {
             GatherMeshes(worldID);
         }
-        if(GUILayout.Button("test2")) {
-            Test2();
+        if (GUILayout.Button("Import Fixtures")) {
+            Test(worldID);
         }
     }
 
-    void Test2() {
-        var prefab = Resources.Load("11526");
-        Instantiate(prefab);
-    }
 
     void Test(uint worldID) {
-        var paths = Util.LoadWorldFiles();
+        if(paths == null || paths.Count < 100) paths = Util.LoadWorldFiles();
 
+        GameObject fixturePrefab = Resources.Load<GameObject>("FixturePrefab");
         Material mat = Resources.Load<Material>("FixtureMat");
         Material clnmat = Resources.Load<Material>("CLNMat");
 
@@ -62,12 +63,20 @@ public class EsoWorldEditorWindow : EditorWindow
                     Transform cell = new GameObject($"CELL {x},{y}:").transform;
                     cell.position = new Vector3(fixtures.fixtures[0].offsetX / 100, 0, fixtures.fixtures[0].offsetY / -100);
                     for (int i = 0; i < fixtures.fixtures.Length; i++) {
+                        if(meshnames.ContainsKey(fixtures.fixtures[i].model)) {
+                            if (meshnames[fixtures.fixtures[i].model].StartsWith("VEG_") || meshnames[fixtures.fixtures[i].model].StartsWith("TRE_")
+                                || meshnames[fixtures.fixtures[i].model].Contains("_INC_")) continue;
+                        }
                         var prefab = Resources.Load(fixtures.fixtures[i].model.ToString());
                         if (prefab == null) prefab = fixturePrefab;
                         GameObject o = (GameObject) Instantiate(prefab, cell);
                         o.transform.localPosition = new Vector3(fixtures.fixtures[i].posX, fixtures.fixtures[i].posY, fixtures.fixtures[i].posZ * -1);
-                        o.transform.localRotation = Quaternion.Euler(0f, (float)(fixtures.fixtures[i].rotY*-180/Math.PI+180d), 0f);
-                        o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? $"{meshnames[fixtures.fixtures[i].model]}_{fixtures.fixtures[i].id}" : $"UNKNOWN_{fixtures.fixtures[i].id}";
+                        o.transform.localRotation = Quaternion.Euler(
+                            (float)(fixtures.fixtures[i].rotX*180/Math.PI), 
+                            (float)(fixtures.fixtures[i].rotY*-180/Math.PI+180d),
+                            (float)(fixtures.fixtures[i].rotZ*-180/Math.PI));
+                        o.name = fixtures.fixtures[i].id.ToString();
+                        //o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? $"{meshnames[fixtures.fixtures[i].model]}_{fixtures.fixtures[i].id}" : $"UNKNOWN_{fixtures.fixtures[i].id}";
                         foreach (var renderer in o.GetComponentsInChildren<MeshRenderer>()) {
                             if(renderer.gameObject.name.StartsWith("CLN")) renderer.sharedMaterial = clnmat;
                             else renderer.sharedMaterial = mat;
@@ -80,7 +89,7 @@ public class EsoWorldEditorWindow : EditorWindow
     }
 
     void GatherMeshes(uint worldID) {
-        var paths = Util.LoadWorldFiles();
+        if (paths == null)  paths = Util.LoadWorldFiles();
 
 
         HashSet<uint> models = new HashSet<uint>();
