@@ -31,6 +31,10 @@ namespace ESOWorld {
             return 0x4400000000000000UL | worldID;
         }
 
+        public static UInt64 WorldFileID(uint worldID, uint layerID) {
+            return 0x4800000000000000UL | ((worldID & 0x7FFUL) << 37) | ((layerID & 0x1FUL) << 32);
+        }
+
         public static string WorldCellFilename(uint worldID, uint layerID, uint cellX, uint cellY) {
             return string.Format("{0:X16}", WorldCellID(worldID, layerID, cellX, cellY));
         }

@@ -7,8 +7,33 @@ using System.IO;
 namespace ESOWorldTests {
     class Program {
         static void Main(string[] args) {
+            //FixtureFile f = new FixtureFile(new BinaryReader(File.OpenRead(@"F:\Extracted\ESO\139\fixtures_3_3.fft")));
+            //ReadTree(f);
+            
             var paths = LoadWorldFiles();
-            HeightMontage(139, paths);
+            uint worldID = 139;
+            Toc t = Toc.Read(paths[Util.WorldTocID(worldID)]);
+            Layer l = t.layers[21];
+            for (uint y = 0; y < l.cellsY; y++) {
+                for (uint x = 0; x < l.cellsX; x++) {
+                    if (!paths.ContainsKey(Util.WorldCellID(worldID, 21, x, y))) continue;
+                    FixtureFile f = new FixtureFile(new BinaryReader(File.OpenRead(paths[Util.WorldCellID(worldID, 21, x, y)])));
+                    Console.WriteLine($"{x},{y}:\n");
+                    ReadTree(f.bvh1);
+                    Console.WriteLine();
+                    ReadTree(f.bvh2);
+                    Console.WriteLine();
+                    ReadTree(f.bvh3);
+                    Console.WriteLine();
+                    ReadTree(f.bvh4);
+                    Console.WriteLine("\n\n");
+                    //if (f.unks.Length == 0) continue;
+                    //Console.WriteLine($"{x},{y}:");
+                    //for (int i = 0; i < f.unks.Length; i++) Console.WriteLine(f.unks[i].fixture.posX);
+                }
+            }
+            
+            //HeightMontage(777, paths);
 
             //for(uint i = 0; i < 1300; i++) {
             //    if(paths.ContainsKey(WorldTocID(i))) {
@@ -16,6 +41,21 @@ namespace ESOWorldTests {
             //        LodMontage(i, paths);
             //    }
             //}
+        }
+
+
+        static void ReadTree(RTree t) {
+            Console.WriteLine(t.signature);
+            ReadNode(0, t.root);
+        }
+
+        static void ReadNode(int depth, RTreeNode node) {
+            if(node.nodes.Length == 0) {
+                Console.WriteLine(new string(' ', depth * 2) + $"{node.levelsBelow}");
+            } else {
+                Console.WriteLine(new string(' ', depth * 2) + $"{node.bbox[0]} {node.bbox[1]} {node.bbox[2]}, {node.bbox[3]} {node.bbox[4]} {node.bbox[5]}");
+                for (int i = 0; i < node.nodes.Length; i++) ReadNode(depth + 1, node.nodes[i]);
+            }
         }
 
         static void HeightMontage(uint worldID, Dictionary<UInt64, string> paths) {
@@ -46,12 +86,12 @@ namespace ESOWorldTests {
             }
 
             //MontageSettings montageSettings = new MontageSettings() { Geometry = new MagickGeometry(512, 512, 0, 0) };
-            var montage = images.Montage(new MontageSettings() { Geometry = new MagickGeometry(64), TileGeometry = new MagickGeometry((int)l.cellsX, (int)l.cellsY) });
+            var montage = images.Montage(new MontageSettings() { Geometry = new MagickGeometry(64), TileGeometry = new MagickGeometry((int)l.cellsX, (int)l.cellsY), Gravity = Gravity.Southwest });
             montage.BackgroundColor = MagickColors.Black;
             montage.Extent(NextPow2(montage.Width) + 1, NextPow2(montage.Height) + 1, Gravity.Southwest);
             Console.WriteLine("saving...");
 
-            montage.Write(string.Format(@"F:\Extracted\ESO\lodtex\{0:0000}_height_{1}x{2}.gray", worldID, montage.Width, montage.Height));
+            montage.Write(string.Format(@"F:\Extracted\ESO\heights\{0:0000}_height_{1}x{2}.gray", worldID, montage.Width, montage.Height));
 
             for (int i = images.Count - 1; i >= 0; i--) images[i].Dispose();
             images.Dispose();
@@ -128,7 +168,12 @@ namespace ESOWorldTests {
                         }
                     }
                 }
+                if (worldFiles.ContainsKey(Util.WorldFileID(worldID, l))) {
+                    File.Copy(worldFiles[Util.WorldFileID(worldID, l)], $@"F:\Extracted\ESO\{worldID}\{t.layers[l].name}.{Util.layerExtensions[l]}", true);
+
+                }
             }
+
         }
 
     }

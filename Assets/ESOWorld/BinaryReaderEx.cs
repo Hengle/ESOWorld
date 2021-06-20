@@ -15,5 +15,9 @@ namespace ESOWorld {
             r.ReadByte();
             return s;
         }
+
+        public static void Seek(this BinaryReader r, int i) {
+            r.BaseStream.Seek(i, SeekOrigin.Current);
+        }
     }
 }
