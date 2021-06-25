@@ -7,18 +7,155 @@ using System.IO;
 namespace ESOWorldTests {
     class Program {
         static void Main(string[] args) {
+
             //FixtureFile f = new FixtureFile(new BinaryReader(File.OpenRead(@"F:\Extracted\ESO\139\fixtures_3_3.fft")));
             //ReadTree(f);
-            
+
             var paths = LoadWorldFiles();
-            uint worldID = 139;
+            HeightMontage(1021, paths);
+
+
+            //Def def = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\600000000000003C_Uncompressed.EsoFileData");
+            /*
+            using(TextWriter w = new StreamWriter(File.Open("deftest.txt", FileMode.Create))) {
+                foreach (string path in Directory.EnumerateFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\", "*_Uncompressed*")) {
+                    Console.WriteLine(Path.GetFileName(path));
+                    Def def = new Def(path);
+                    for (int i = 0; i < def.rows.Length; i++) {
+                        w.WriteLine(def.rows[i]);
+                    }
+                   w.WriteLine();
+                }
+            }
+            */
+
+            /*
+            Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
+            Def waterVolumes = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\6000000000000045_Uncompressed.EsoFileData", typeof(DefDataWaterVolume));
+            for(int i = 0; i < tilemaps.rows.Length; i++) {
+                DefDataWorldTileMap tilemap = (DefDataWorldTileMap)tilemaps.rows[i].data;
+                if (tilemap.type == 6 && tilemap.layers.Length > 0) {
+                    for (int l = 0; l < tilemap.layers.Length; l++) {
+                        var waterVolume = waterVolumes.Get(tilemap.layers[l].key);
+                        if (waterVolume != null) {
+                            float waterHeight = ((DefDataWaterVolume)waterVolume.data).height / 100f;
+                            Console.WriteLine($"{tilemap.name} {tilemap.worldID} {tilemap.x} {tilemap.y} {tilemap.cellSizeX} {waterHeight}");
+                        }
+                    }
+                }
+            }
+            */
+            /*
+            byte[] zeroes = new byte[32];
+            Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
+            for (int length = 0; length < 1300; length++) {
+                BinaryWriter w = null; 
+                for (int i = 0; i < tilemaps.rows.Length; i++) {
+                    DefDataWorldTileMap tilemap = (DefDataWorldTileMap)tilemaps.rows[i].data;
+                    if (tilemap.type != 6) continue;
+                    for (int l = 0; l < tilemap.layers.Length; l += 4) {
+                        if (tilemap.layers[l].data.Length == length) {
+                            if(w == null) w = new BinaryWriter(File.Open($"testlayers{length - 1}.dat", FileMode.Create));
+                            int nameLength = Math.Min(tilemap.name.Length, 24);
+                            w.Write(tilemap.name.Substring(0, nameLength).ToCharArray());
+                            w.Write(zeroes, 0, 24 - nameLength);
+                            w.Write(tilemap.layers[l].data, 0, length - 1);
+                        }
+                    }
+                }
+                if (w != null) {
+                    w.Flush();
+                    w.Close();
+                }
+            }
+            */
+
+
+
+            /*
+            ulong[] totals = new ulong[256];
+            ulong[] totals2 = new ulong[256];
+            ulong[] totals3 = new ulong[256];
+            ulong[] totals4 = new ulong[256];
+
+            int biggest = 0;
+            DefRow row = null;
+            Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
+            for (int i = 0; i < tilemaps.rows.Length; i++) {
+                DefDataWorldTileMap tilemap = (DefDataWorldTileMap)tilemaps.rows[i].data;
+                
+                for (int l = 0; l < tilemap.layers.Length; l+=4) {
+                    for(int b = 12; b < tilemap.layers[l].data.Length - 4; b++) {
+                        totals[tilemap.layers[l].data[b]]++;
+                        totals2[tilemap.layers[l].data[b + 1]]++;
+                        totals3[tilemap.layers[l].data[b + 2]]++;
+                        totals4[tilemap.layers[l].data[b + 3]]++;
+                    }
+                }
+            }
+            for(int i = 0; i < 256; i++) {
+                Console.WriteLine($"{i} {totals[i]} {totals2[i]} {totals3[i]} {totals4[i]}");
+            }
+            */
+            /*
+            Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
+            using (TextWriter w = new StreamWriter(File.Open("imstuff.txt", FileMode.Create))) {
+                for (int i = 0; i < tilemaps.rows.Length; i++) {
+                    DefDataWorldTileMap tilemap = (DefDataWorldTileMap)tilemaps.rows[i].data;
+                    w.WriteLine($"{tilemap.updateTag} {tilemap.worldID} {tilemap.name}");
+
+                }
+            }
+            */
+            //ListPOI();
+
+        }
+
+        static void ListPOI() {
+            Dictionary<uint, string> poiNames = new Dictionary<uint, string>();
+            Dictionary<uint, string> objectiveText = new Dictionary<uint, string>();
+            Dictionary<uint, string> objectiveCompleteText = new Dictionary<uint, string>();
+
+            using (TextReader r = new StreamReader(File.OpenRead(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\gamedata\lang\en.lang.csv"))) {
+                while(r.Peek() != -1) {
+                    string[] words = r.ReadLine().Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (words[0] == "10860933") {
+                        poiNames[UInt32.Parse(words[4])] = words[8];
+                        //Console.WriteLine(words[2] + words[4]);
+                    } else if (words[0] == "129979412") {
+                        objectiveText[UInt32.Parse(words[4])] = words[8];
+                        //Console.WriteLine(words[2] + words[4]);
+                    } else if (words[0] == "108566804") {
+                        objectiveCompleteText[UInt32.Parse(words[4])] = words[8];
+                        //Console.WriteLine(words[2] + words[4]);
+                    } 
+                }
+            }
+            Def pois = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\600000000000004A_Uncompressed.EsoFileData", typeof(DefPointOfInterest));
+            using (TextWriter w = new StreamWriter(File.Open("poitext.csv", FileMode.Create))) {
+                for(int i = 0; i < pois.rows.Length; i++) {
+                    var poi = (DefPointOfInterest)pois.rows[i].data;
+                    uint id = poi.id;
+                    w.WriteLine($"{id}\t{poi.type}\t{poiNames[id]}");
+                    //if (objectiveText.ContainsKey(id) && objectiveCompleteText.ContainsKey(id)) {
+                    //    w.WriteLine($"{id}\t{poi.type}\t{poiNames[id]}\t{objectiveText[id]}\t{objectiveCompleteText[id]}");
+                    //}
+                }
+            }
+   
+            
+        }
+
+        
+
+        static void PrintBVH(uint worldID, Dictionary<UInt64, string> paths) {
             Toc t = Toc.Read(paths[Util.WorldTocID(worldID)]);
             Layer l = t.layers[21];
             for (uint y = 0; y < l.cellsY; y++) {
                 for (uint x = 0; x < l.cellsX; x++) {
                     if (!paths.ContainsKey(Util.WorldCellID(worldID, 21, x, y))) continue;
                     FixtureFile f = new FixtureFile(new BinaryReader(File.OpenRead(paths[Util.WorldCellID(worldID, 21, x, y)])));
-                    Console.WriteLine($"{x},{y}:\n");
+                    Console.WriteLine($"{ x},{y}:\n");
                     ReadTree(f.bvh1);
                     Console.WriteLine();
                     ReadTree(f.bvh2);
@@ -32,15 +169,6 @@ namespace ESOWorldTests {
                     //for (int i = 0; i < f.unks.Length; i++) Console.WriteLine(f.unks[i].fixture.posX);
                 }
             }
-            
-            //HeightMontage(777, paths);
-
-            //for(uint i = 0; i < 1300; i++) {
-            //    if(paths.ContainsKey(WorldTocID(i))) {
-            //        Console.WriteLine(i);
-            //        LodMontage(i, paths);
-            //    }
-            //}
         }
 
 
@@ -88,9 +216,12 @@ namespace ESOWorldTests {
             //MontageSettings montageSettings = new MontageSettings() { Geometry = new MagickGeometry(512, 512, 0, 0) };
             var montage = images.Montage(new MontageSettings() { Geometry = new MagickGeometry(64), TileGeometry = new MagickGeometry((int)l.cellsX, (int)l.cellsY), Gravity = Gravity.Southwest });
             montage.BackgroundColor = MagickColors.Black;
-            montage.Extent(NextPow2(montage.Width) + 1, NextPow2(montage.Height) + 1, Gravity.Southwest);
+            montage.Write(string.Format(@"F:\Extracted\ESO\heights\{0:0000}_height_{1}x{2}.png", worldID, montage.Width, montage.Height));
+            int resize = Math.Max(NextPow2(montage.Width) + 1, NextPow2(montage.Height) + 1);
+            montage.Extent(resize, resize, Gravity.Southwest);
             Console.WriteLine("saving...");
 
+            montage.Write(string.Format(@"F:\Extracted\ESO\heights\{0:0000}_height_{1}x{2}.png", worldID, montage.Width, montage.Height));
             montage.Write(string.Format(@"F:\Extracted\ESO\heights\{0:0000}_height_{1}x{2}.gray", worldID, montage.Width, montage.Height));
 
             for (int i = images.Count - 1; i >= 0; i--) images[i].Dispose();

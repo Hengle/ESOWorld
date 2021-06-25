@@ -14,6 +14,10 @@ public class EsoWorldEditorWindow : EditorWindow
     uint worldID;
     int pathCount;
     Dictionary<ulong, string> paths;
+    Dictionary<uint, string> meshnames;
+    GameObject fixturePrefab;
+    Material mat;
+    Material clnmat;
 
     [MenuItem("Window/ESOWorld")]
     static void Init() {
@@ -42,6 +46,31 @@ public class EsoWorldEditorWindow : EditorWindow
         if (GUILayout.Button("BVH Test")) {
             BVHTest();
         }
+        if (GUILayout.Button("Persistent Test")) {
+            LoadPersistentFixtures(worldID);
+        }
+        if (GUILayout.Button("Load Water")) {
+            LoadWater(worldID);
+        }
+    }
+
+    void LoadWater(uint worldID) {
+        GameObject waterPrefab = Resources.Load<GameObject>("WaterPrefab"); 
+        Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
+        Def waterVolumes = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\6000000000000045_Uncompressed.EsoFileData", typeof(DefDataWaterVolume));
+        for (int i = 0; i < tilemaps.rows.Length; i++) {
+            DefDataWorldTileMap tilemap = (DefDataWorldTileMap)tilemaps.rows[i].data;
+            if (tilemap.worldID != worldID || tilemap.type != 6 || tilemap.layers.Length == 0) continue;
+            for (int l = 0; l < tilemap.layers.Length; l++) {
+                var waterVolume = waterVolumes.Get(tilemap.layers[l].key);
+                if (waterVolume != null) {
+                    float waterHeight = ((DefDataWaterVolume)waterVolume.data).height / 100f;
+                    var water = Instantiate(waterPrefab, new Vector3(500 * tilemap.x + 250, waterHeight, -500 * tilemap.y - 250), Quaternion.identity);
+                    water.name = $"WATER {tilemap.x},{tilemap.y}";
+                    //Console.WriteLine($"{tilemap.name} {tilemap.worldID} {tilemap.x} {tilemap.y} {tilemap.cellSizeX} {waterHeight}");
+                }
+            }
+        }
     }
 
     void LoadVolumes(uint worldID) {
@@ -53,7 +82,7 @@ public class EsoWorldEditorWindow : EditorWindow
                 if (paths.ContainsKey(Util.WorldCellID(worldID, 21, x, y))) {
                     FixtureFile fixtures = FixtureFile.Open(paths[Util.WorldCellID(worldID, 21, x, y)]);
                     if (fixtures.volumes.Length == 0) continue;
-                    Transform cell = new GameObject($"UNK {x},{y}:").transform;
+                    Transform cell = new GameObject($"VOLUMES {x},{y}:").transform;
                     cell.position = new Vector3(fixtures.fixtures[0].fixture.offsetX / 100, 0, fixtures.fixtures[0].fixture.offsetY / -100);
                     for (int i = 0; i < fixtures.volumes.Length; i++) {
                         GameObject o = (GameObject)Instantiate(fixturePrefab, cell);
@@ -63,7 +92,7 @@ public class EsoWorldEditorWindow : EditorWindow
                             (float)(fixtures.volumes[i].fixture.rotY * -180 / Math.PI + 180d),
                             (float)(fixtures.volumes[i].fixture.rotZ * -180 / Math.PI));
                         o.transform.localScale = new Vector3(fixtures.volumes[i].x, fixtures.volumes[i].y, fixtures.volumes[i].z);
-                        o.name = fixtures.volumes[i].fixture.id.ToString();
+                        o.name = "volume_" + fixtures.volumes[i].fixture.id.ToString();
                     }
                 }
             }
@@ -94,16 +123,17 @@ public class EsoWorldEditorWindow : EditorWindow
 
     void LoadFixtures(uint worldID) {
         if(paths == null || paths.Count < 100) paths = Util.LoadWorldFiles();
-
-        GameObject fixturePrefab = Resources.Load<GameObject>("FixturePrefab");
-        Material mat = Resources.Load<Material>("FixtureMat");
-        Material clnmat = Resources.Load<Material>("CLNMat");
+        fixturePrefab = Resources.Load<GameObject>("FixturePrefab");
+        mat = Resources.Load<Material>("FixtureMat");
+        clnmat = Resources.Load<Material>("CLNMat");
 
         //unneccecary?
-        Dictionary<uint, string> meshnames = new Dictionary<uint, string>();
-        foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\meshids.txt")) {
-            string[] words = line.Split(' ');
-            meshnames[UInt32.Parse(words[0])] = words[1];
+        if (meshnames == null) {
+            meshnames = new Dictionary<uint, string>();
+            foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\meshids.txt")) {
+                string[] words = line.Split(' ');
+                meshnames[UInt32.Parse(words[0])] = words[1];
+            }
         }
 
         Toc t = Toc.Read(paths[Util.WorldTocID(worldID)]);
@@ -115,28 +145,64 @@ public class EsoWorldEditorWindow : EditorWindow
                     if (fixtures.fixtures.Length == 0) continue;
                     Transform cell = new GameObject($"CELL {x},{y}:").transform;
                     cell.position = new Vector3(fixtures.fixtures[0].fixture.offsetX / 100, 0, fixtures.fixtures[0].fixture.offsetY / -100);
-                    for (int i = 0; i < fixtures.fixtures.Length; i++) {
-                        if(meshnames.ContainsKey(fixtures.fixtures[i].model)) {
-                            if (meshnames[fixtures.fixtures[i].model].StartsWith("VEG_") || meshnames[fixtures.fixtures[i].model].StartsWith("TRE_")
-                                || meshnames[fixtures.fixtures[i].model].Contains("_INC_")) continue;
-                        }
-                        var prefab = Resources.Load(fixtures.fixtures[i].model.ToString());
-                        if (prefab == null) prefab = fixturePrefab;
-                        GameObject o = (GameObject) Instantiate(prefab, cell);
-                        o.transform.localPosition = new Vector3(fixtures.fixtures[i].fixture.posX, fixtures.fixtures[i].fixture.posY, fixtures.fixtures[i].fixture.posZ * -1);
-                        o.transform.localRotation = Quaternion.Euler(
-                            (float)(fixtures.fixtures[i].fixture.rotX*180/Math.PI), 
-                            (float)(fixtures.fixtures[i].fixture.rotY*-180/Math.PI+180d),
-                            (float)(fixtures.fixtures[i].fixture.rotZ*-180/Math.PI));
-                        o.name = fixtures.fixtures[i].fixture.id.ToString();
-                        //o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? $"{meshnames[fixtures.fixtures[i].model]}_{fixtures.fixtures[i].id}" : $"UNKNOWN_{fixtures.fixtures[i].id}";
-                        foreach (var renderer in o.GetComponentsInChildren<MeshRenderer>()) {
-                            if(renderer.gameObject.name.StartsWith("CLN")) renderer.sharedMaterial = clnmat;
-                            else renderer.sharedMaterial = mat;
-                        }
-                    }
+                    ImportFixtures(fixtures, cell);
                 } else
                     Debug.Log("MISSING FIXTURE FILE");
+            }
+        }
+    }
+
+    //delete later
+    void LoadPersistentFixtures(uint worldID) {
+
+
+        if (paths == null || paths.Count < 100) paths = Util.LoadWorldFiles();
+        fixturePrefab = Resources.Load<GameObject>("FixturePrefab");
+        mat = Resources.Load<Material>("FixtureMat");
+        clnmat = Resources.Load<Material>("CLNMat");
+
+        //unneccecary?
+        if (meshnames == null) {
+            meshnames = new Dictionary<uint, string>();
+            foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\meshids.txt")) {
+                string[] words = line.Split(' ');
+                meshnames[UInt32.Parse(words[0])] = words[1];
+            }
+        }
+
+        if(paths.ContainsKey(Util.WorldFileID(worldID, 1))) {
+            FixtureFile fixtures = FixtureFile.Open(paths[Util.WorldFileID(worldID, 1)]);
+            Transform cell = new GameObject("PERSISTENT CELL 1").transform;
+            ImportFixtures(fixtures, cell);
+        }
+        if (paths.ContainsKey(Util.WorldFileID(worldID, 2))) {
+            FixtureFile fixtures = FixtureFile.Open(paths[Util.WorldFileID(worldID, 2)]);
+            Debug.Log(fixtures.fixtures.Length);
+            Transform cell = new GameObject("PERSISTENT CELL 2").transform;
+            ImportFixtures(fixtures, cell);
+        }
+    }
+
+    void ImportFixtures(FixtureFile fixtures, Transform cell) {
+        for (int i = 0; i < fixtures.fixtures.Length; i++) {
+            //if (meshnames.ContainsKey(fixtures.fixtures[i].model)) {
+            //    if (meshnames[fixtures.fixtures[i].model].StartsWith("VEG_") || meshnames[fixtures.fixtures[i].model].StartsWith("TRE_")
+            //        || meshnames[fixtures.fixtures[i].model].Contains("_INC_")) continue;
+            //}
+            var prefab = Resources.Load(fixtures.fixtures[i].model.ToString());
+            if (prefab == null) prefab = fixturePrefab;
+            GameObject o = (GameObject)Instantiate(prefab, cell);
+            o.transform.localPosition = new Vector3(fixtures.fixtures[i].fixture.posX, fixtures.fixtures[i].fixture.posY, fixtures.fixtures[i].fixture.posZ * -1);
+            o.transform.localRotation = Quaternion.Euler(
+                (float)(fixtures.fixtures[i].fixture.rotX * 180 / Math.PI),
+                (float)(fixtures.fixtures[i].fixture.rotY * -180 / Math.PI + 180d),
+                (float)(fixtures.fixtures[i].fixture.rotZ * -180 / Math.PI));
+            //o.name = fixtures.fixtures[i].fixture.id.ToString();
+            o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? fixtures.fixtures[i].fixture.id.ToString() : $"{fixtures.fixtures[i].fixture.id}_UNK{fixtures.fixtures[i].model}";
+            //o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? $"{meshnames[fixtures.fixtures[i].model]}_{fixtures.fixtures[i].id}" : $"UNKNOWN_{fixtures.fixtures[i].id}";
+            foreach (var renderer in o.GetComponentsInChildren<MeshRenderer>()) {
+                if (renderer.gameObject.name.StartsWith("CLN")) renderer.sharedMaterial = clnmat;
+                else renderer.sharedMaterial = mat;
             }
         }
     }

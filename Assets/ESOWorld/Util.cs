@@ -6,13 +6,17 @@ namespace ESOWorld {
     public class Util {
 
         public static string[] layerNames = new string[] {
-            "fixtures", "terrain", "terrain-height", "terrain-color-raw", "terrain-color", "terrain-blend0-raw", "terrain-blend1-raw", "terrain-blend2-raw", "terrain-blend3-raw",
+            "grass", "terrain", "terrain-height", "terrain-color-raw", "terrain-color", "terrain-blend0-raw", "terrain-blend1-raw", "terrain-blend2-raw", "terrain-blend3-raw",
             "minimap", "terrain-lod", "terrain-map", "terrain-lod-diffuse", "terrain-lod-normal", "terrain-normal", "terrain-hole", "terrain-clutter", "terrain-clutter-pts",
             "ext0", "ext1", "ext2", "fixtures", "minimap2", "ext3", "ext4"
         };
 
         public static string[] layerExtensions = new string[] {
-            "ffs", "dat","dat","dat","dds","dat","dat","dat","dat","dds","dat","dds","dds","dds","dat","dat","dat","dat","dat","dat","dat","fft","dds","dat","dat"
+            "dds", "dat","dat","dat","dds","dat","dat","dat","dat","dds","dat","dds","dds","dds","dat","dat","dat","dat","dat","dat","dat","fft","dds","dat","dat"
+        };
+
+        public static string[] layerFiles = new string[] {
+            "grass", "lod-fixtures", "trees", "2", "3", "4"
         };
 
         public static Dictionary<UInt64, string> LoadWorldFiles() {
@@ -44,7 +48,7 @@ namespace ESOWorld {
             //return string.Format("{0:X}", id >> 112);
             if ((id >> 120) == 0x44) return $"{id & 0xffff}.toc";
             if ((id >> 120) == 0x40) return $"{(id >> 37) & 0x7ff}_{layerNames[(id >> 32) & 0x1f]}_{(id >> 16) & 0xffff}_{id & 0xffff}.cell";
-            if ((id >> 120) == 0x48) return $"{(id >> 37) & 0x7ff}_{layerNames[(id >> 32) & 0x1f]}.file";
+            if ((id >> 120) == 0x48) return $"{(id >> 37) & 0x7ff}_{layerFiles[(id >> 32) & 0x1f]}.file";
 
             return "";
         }
