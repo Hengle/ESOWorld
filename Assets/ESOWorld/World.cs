@@ -44,8 +44,8 @@ namespace ESOWorld {
         public uint cellsY;
         public Layer(BinaryReader r, uint sizeX = 0, uint sizeY = 0) {
             size = r.ReadUInt16();
-            name = r.ReadSTDString();
-            extension = r.ReadSTDString();
+            name = r.ReadStringC();
+            extension = r.ReadStringC();
             cellsX = (uint)((float)sizeX / size + 0.5);
             cellsY = (uint)((float)sizeY / size + 0.5);
         }

@@ -11,8 +11,17 @@ namespace ESOWorldTests {
             //FixtureFile f = new FixtureFile(new BinaryReader(File.OpenRead(@"F:\Extracted\ESO\139\fixtures_3_3.fft")));
             //ReadTree(f);
 
-            var paths = LoadWorldFiles();
-            HeightMontage(1021, paths);
+            //var paths = LoadWorldFiles();
+            //HeightMontage(1095, paths);
+
+            TextWriter w = new StreamWriter(File.Open("zone.csv", FileMode.Create));
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\newlang\gamedata\lang\en.lang");
+            for(uint i = 0; i < 2000; i++) {
+                if (l.HasName(i, Lang.Entry.Zone)) {
+                    w.WriteLine($"{i}|{l.GetName(i, Lang.Entry.Zone)}|{l.GetName(i, Lang.Entry.ZoneLoadScreenText)}");
+                }
+            }
+            w.Flush(); w.Close();
 
 
             //Def def = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\600000000000003C_Uncompressed.EsoFileData");
@@ -221,7 +230,6 @@ namespace ESOWorldTests {
             montage.Extent(resize, resize, Gravity.Southwest);
             Console.WriteLine("saving...");
 
-            montage.Write(string.Format(@"F:\Extracted\ESO\heights\{0:0000}_height_{1}x{2}.png", worldID, montage.Width, montage.Height));
             montage.Write(string.Format(@"F:\Extracted\ESO\heights\{0:0000}_height_{1}x{2}.gray", worldID, montage.Width, montage.Height));
 
             for (int i = images.Count - 1; i >= 0; i--) images[i].Dispose();

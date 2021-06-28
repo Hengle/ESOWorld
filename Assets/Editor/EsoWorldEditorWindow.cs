@@ -17,6 +17,7 @@ public class EsoWorldEditorWindow : EditorWindow
     Dictionary<uint, string> meshnames;
     GameObject fixturePrefab;
     Material mat;
+    Material rokmat;
     Material clnmat;
 
     [MenuItem("Window/ESOWorld")]
@@ -33,6 +34,7 @@ public class EsoWorldEditorWindow : EditorWindow
         }
         EditorGUILayout.IntField(pathCount);
         EditorGUILayout.EndHorizontal();
+        rokmat = (Material)EditorGUILayout.ObjectField(rokmat, typeof(Material));
         worldID = (uint)EditorGUILayout.IntField("World:", (int)worldID);
         if (GUILayout.Button("Import Models")) {
             GatherMeshes(worldID);
@@ -173,22 +175,21 @@ public class EsoWorldEditorWindow : EditorWindow
         if(paths.ContainsKey(Util.WorldFileID(worldID, 1))) {
             FixtureFile fixtures = FixtureFile.Open(paths[Util.WorldFileID(worldID, 1)]);
             Transform cell = new GameObject("PERSISTENT CELL 1").transform;
-            ImportFixtures(fixtures, cell);
+            ImportFixtures(fixtures, cell, false);
         }
         if (paths.ContainsKey(Util.WorldFileID(worldID, 2))) {
             FixtureFile fixtures = FixtureFile.Open(paths[Util.WorldFileID(worldID, 2)]);
             Debug.Log(fixtures.fixtures.Length);
             Transform cell = new GameObject("PERSISTENT CELL 2").transform;
-            ImportFixtures(fixtures, cell);
+            ImportFixtures(fixtures, cell, false);
         }
     }
 
-    void ImportFixtures(FixtureFile fixtures, Transform cell) {
+    void ImportFixtures(FixtureFile fixtures, Transform cell, bool ignoreVeg = true) {
         for (int i = 0; i < fixtures.fixtures.Length; i++) {
-            //if (meshnames.ContainsKey(fixtures.fixtures[i].model)) {
-            //    if (meshnames[fixtures.fixtures[i].model].StartsWith("VEG_") || meshnames[fixtures.fixtures[i].model].StartsWith("TRE_")
-            //        || meshnames[fixtures.fixtures[i].model].Contains("_INC_")) continue;
-            //}
+            if (meshnames.ContainsKey(fixtures.fixtures[i].model) && ignoreVeg) {
+                if (meshnames[fixtures.fixtures[i].model].StartsWith("VEG_") || meshnames[fixtures.fixtures[i].model].StartsWith("TRE_")) continue;
+            }
             var prefab = Resources.Load(fixtures.fixtures[i].model.ToString());
             if (prefab == null) prefab = fixturePrefab;
             GameObject o = (GameObject)Instantiate(prefab, cell);
@@ -201,7 +202,8 @@ public class EsoWorldEditorWindow : EditorWindow
             o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? fixtures.fixtures[i].fixture.id.ToString() : $"{fixtures.fixtures[i].fixture.id}_UNK{fixtures.fixtures[i].model}";
             //o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? $"{meshnames[fixtures.fixtures[i].model]}_{fixtures.fixtures[i].id}" : $"UNKNOWN_{fixtures.fixtures[i].id}";
             foreach (var renderer in o.GetComponentsInChildren<MeshRenderer>()) {
-                if (renderer.gameObject.name.StartsWith("CLN")) renderer.sharedMaterial = clnmat;
+                if (renderer.gameObject.name.StartsWith("CLN_")) renderer.sharedMaterial = clnmat;
+                else if(renderer.gameObject.name.StartsWith("ROK_") || renderer.gameObject.name.StartsWith("PFX_ROK_") || renderer.gameObject.name.StartsWith("CAV_")) renderer.sharedMaterial = rokmat;
                 else renderer.sharedMaterial = mat;
             }
         }

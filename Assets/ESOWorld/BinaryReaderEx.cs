@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-
+using System.Collections.Generic;
 
 namespace ESOWorld {
     public static class BinaryReaderEx {
@@ -10,7 +10,7 @@ namespace ESOWorld {
             return val;
         }
 
-        public static string ReadSTDString(this BinaryReader r) {
+        public static string ReadStringC(this BinaryReader r) {
             string s = new string(r.ReadChars(r.ReadUInt16()));
             r.ReadByte();
             return s;
@@ -28,6 +28,12 @@ namespace ESOWorld {
         public static ushort ReadUInt16B(this BinaryReader r) {
             byte[] b = r.ReadBytes(2);
             return (ushort)(b[1] | (b[0] << 8));
+        }
+
+        public static string ReadStringNullTerminated(this BinaryReader r) {
+            List<char> bytes = new List<char>();
+            while (r.PeekChar() != 0x00) bytes.Add(r.ReadChar());
+            return new string(bytes.ToArray());
         }
     }
 }
