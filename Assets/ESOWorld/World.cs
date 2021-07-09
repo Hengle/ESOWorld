@@ -51,7 +51,69 @@ namespace ESOWorld {
         }
     }
 
+    public class TerrainFile {
+        ushort version;
+        uint[] sizes;
+        public TerrainLayer[] layers;
+
+        public TerrainFile(BinaryReader r) {
+            version = r.ReadUInt16();
+            r.Seek(7);
+            sizes = new uint[r.ReadByte()];
+            for(int i = 0; i < sizes.Length; i++) {
+                r.Seek(5);
+                sizes[i] = r.ReadUInt32();
+			}
+            r.Seek(82);
+            layers = new TerrainLayer[sizes.Length];
+            for(uint i = 0; i < layers.Length; i++) { //CHANGE BACK TO LAYERS.LENGTH
+                if (sizes[i] > 0) layers[i] = new TerrainLayer(i, r);
+			}
+		}
+
+        public float[,] GetHeights() {
+            if (layers[0] == null) return new float[65, 65];
+            float[,] heights = new float[layers[0].rows.Length, layers[0].rows.Length];
+            for(int row = 0; row < layers[0].rows.Length; row++) {
+                for(int x = 0; x < layers[0].rows.Length; x++) {
+                    heights[x, row] = BitConverter.ToSingle(layers[0].rows[row], x * 4);
+				}
+			}
+            return heights;
+        }
+
+        public byte[] GetLayerBytes(int layer) {
+            List<byte> bytes = new List<byte>((int)(layers[layer].rowSize * layers[layer].rows.Length));
+            for(int i = 0; i < layers[layer].rows.Length; i++) {
+                bytes.AddRange(layers[layer].rows[i]);
+			}
+            return bytes.ToArray();
+		}
+    }
+
+    public class TerrainLayer {
+        public uint type;
+        public ushort rowSize;
+        public uint rowSize2;
+        public byte[][] rows;
+
+        public TerrainLayer(uint type, BinaryReader r) {
+            this.type = type;
+            r.Seek(4);
+            rows = new byte[r.ReadUInt32()][];
+            rowSize2 = r.ReadUInt32();
+            rowSize = (ushort) r.ReadUInt32();
+            
+            for(uint i = 0; i < rows.Length; i++) {
+                r.AssertUint16(rowSize);
+                rows[i] = r.ReadBytes(rowSize);
+			}
+            r.Seek(4);
+		}
+	}
+
     public class FixtureFile {
+        public uint version;
         public FixturePlaced[] fixtures;
         public FixtureLight[] lights;
         public FixtureVolume[] volumes;
@@ -62,12 +124,12 @@ namespace ESOWorld {
         public RTree bvh4;
 
         public FixtureFile(BinaryReader r) {
-            r.AssertUint32(23);
+            version = r.ReadUInt32();
             fixtures = new FixturePlaced[r.ReadUInt32()];
             for(int i = 0; i < fixtures.Length; i++) {
-                fixtures[i] = new FixturePlaced(r);
+                fixtures[i] = new FixturePlaced(r, version);
             }
-
+            /*
             lights = new FixtureLight[r.ReadUInt32()];
             for (int i = 0; i < lights.Length; i++) {
                 lights[i] = new FixtureLight(r);
@@ -87,6 +149,7 @@ namespace ESOWorld {
             bvh2 = new RTree(r);
             bvh3 = new RTree(r);
             bvh4 = new RTree(r);
+            */
         }
 
         public static FixtureFile Open(string path) {
@@ -115,11 +178,12 @@ namespace ESOWorld {
         public Fixture fixture;
         public uint model;
 
-        public FixturePlaced(BinaryReader r) {
+        public FixturePlaced(BinaryReader r, uint version) {
             fixture = new Fixture(r);
-            r.BaseStream.Seek(16, SeekOrigin.Current);
+            r.Seek(16);
             model = r.ReadUInt32();
-            r.BaseStream.Seek(24, SeekOrigin.Current);
+            r.Seek(8);
+            if (version != 22) r.Seek(16);
         }
     }
 

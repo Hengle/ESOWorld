@@ -10,6 +10,12 @@ namespace ESOWorld {
             return val;
         }
 
+        public static uint AssertUint16(this BinaryReader r, ushort comp) {
+            ushort val =  r.ReadUInt16();
+            if (val != comp) Console.WriteLine($"ASSERTION FAILED {val} !+ {comp}");
+            return val;
+        }
+
         public static string ReadStringC(this BinaryReader r) {
             string s = new string(r.ReadChars(r.ReadUInt16()));
             r.ReadByte();
@@ -17,6 +23,10 @@ namespace ESOWorld {
         }
 
         public static void Seek(this BinaryReader r, int i) {
+            r.BaseStream.Seek(i, SeekOrigin.Current);
+        }
+
+        public static void Seek(this BinaryReader r, uint i) {
             r.BaseStream.Seek(i, SeekOrigin.Current);
         }
 
@@ -34,6 +44,12 @@ namespace ESOWorld {
             List<char> bytes = new List<char>();
             while (r.PeekChar() != 0x00) bytes.Add(r.ReadChar());
             return new string(bytes.ToArray());
+        }
+
+        public static uint[] ReadUInt32ArrayB(this BinaryReader r) {
+            uint[] arr = new uint[r.ReadUInt32B()];
+            for (int i = 0; i < arr.Length; i++) arr[i] = r.ReadUInt32B();
+            return arr;
         }
     }
 }

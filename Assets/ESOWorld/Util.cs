@@ -19,9 +19,10 @@ namespace ESOWorld {
             "grass", "lod-fixtures", "trees", "2", "3", "4"
         };
 
-        public static Dictionary<UInt64, string> LoadWorldFiles() {
+        public static Dictionary<UInt64, string> LoadWorldFiles(string worldFolder = @"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\") {
             Dictionary<UInt64, string> worldFiles = new Dictionary<ulong, string>();
-            foreach (string path in Directory.EnumerateFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\", "*", SearchOption.AllDirectories))
+            //foreach (string path in Directory.EnumerateFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\", "*", SearchOption.AllDirectories))
+            foreach (string path in Directory.EnumerateFiles(worldFolder, "*", SearchOption.AllDirectories))
                 if (!path.Contains(".xv4")) worldFiles[UInt64.Parse(Path.GetFileNameWithoutExtension(path), System.Globalization.NumberStyles.HexNumber)] = path;
             Console.WriteLine("loaded paths");
             return worldFiles;

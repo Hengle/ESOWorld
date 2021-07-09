@@ -17,6 +17,11 @@ namespace ESOWorld {
             return null;
         }
 
+        public string GetName(uint id) {
+            for (int i = 0; i < rows.Length; i++) if (rows[i].id == id) return rows[i].data.name;
+            return id.ToString();
+        }
+
         public Def(string path) : this(path, typeof(DefDataGeneric)) { }
 
         public Def(string path, Type dataType) {
@@ -80,10 +85,10 @@ namespace ESOWorld {
     }
 
     public class DefDataGeneric : DefData {
-        public byte[] data;
+        //public byte[] data;
         public DefDataGeneric(BinaryReader r) {
             ReadHeader(r);
-            data = r.ReadBytes((int)r.BaseStream.Length - name.Length - HEADER_SIZE_WITHOUT_NAME);
+            //data = r.ReadBytes((int)r.BaseStream.Length - name.Length - HEADER_SIZE_WITHOUT_NAME);
         }
     }
 
@@ -142,6 +147,124 @@ namespace ESOWorld {
         public DefPointOfInterest(BinaryReader r) {
             ReadHeader(r);
             type = r.ReadUInt32B();
+        }
+    }
+
+    public class DefZone : DefData {
+        public float[] color;
+        public uint worldID;
+        public uint mapID;
+        public uint[] pois;
+        public uint loadingScreenID;
+        public uint parentWorldID;
+
+        public DefZone(BinaryReader r) {
+            ReadHeader(r);
+            r.Seek(8);
+            color = new float[] { r.ReadSingle(), r.ReadSingle(), r.ReadSingle() };
+            worldID = r.ReadUInt32B();
+            r.Seek(14);
+            mapID = r.ReadUInt32B();
+            pois = new uint[r.ReadUInt32B()];
+            for (int i = 0; i < pois.Length; i++) pois[i] = r.ReadUInt32B();
+            r.Seek(8);
+            r.Seek((int)r.ReadUInt32B() * 4);
+            loadingScreenID = r.ReadUInt32B();
+            r.Seek(4);
+            parentWorldID = r.ReadUInt32B();
+        }
+    }
+
+    public class DefQuest : DefData {
+        public byte isShareable;
+        public uint[] id1;
+        public uint[] id2;
+        public uint[] id3;
+        public uint id4;
+        public uint[] id5;
+        public QuestType type;
+        public uint level;
+        public uint questRewardID;
+        public uint unk2;
+        public uint[] antiPrereqs;
+        public uint[] antiCurrentPrereqs;
+        public uint[] antiEndings;
+        public uint unk3;
+        public uint poiID;
+        public uint zoneID;
+        public uint zoneID2;
+        public RepeatableType repeatableType;
+        public uint[] bestowals;
+        public uint guildID;
+        public uint guildRank;
+        public uint companionLevel;
+        public Icon icon;
+        public uint companionID;
+
+        public enum QuestType {
+            Generic = 0,
+            Repeatable = 1,
+            Main = 2,
+            Guild = 3,
+            Crafting = 4,
+            Dungeon = 5,
+            Trial = 6,
+            PVP = 7,
+            Unk1 = 9,
+            PVP2 = 10,
+            Event = 12,
+            Battleground = 13,
+            Prologue = 14,
+            Pledge = 15,
+            Companion = 16
+        }
+
+        public enum RepeatableType {
+            No = 0,
+            Repeatable = 1,
+            Daily = 2,
+            Event = 3
+        }
+
+        public enum Icon { 
+            None = 0,
+            Solo = 1,
+            Group = 2,
+            Trial = 3,
+            GroupArea = 5,
+            ZoneStory = 10,
+            Companion = 11
+        }
+
+        public DefQuest(BinaryReader r) {
+            ReadHeader(r);
+            isShareable = r.ReadByte();
+            r.Seek(2);
+            id1 = r.ReadUInt32ArrayB();
+            id2 = r.ReadUInt32ArrayB();
+            id3 = r.ReadUInt32ArrayB();
+            id4 = r.ReadUInt32B();
+            id5 = r.ReadUInt32ArrayB();
+            type = (QuestType) r.ReadUInt32B();
+            level = r.ReadUInt32B();
+            questRewardID = r.ReadUInt32B();
+            unk2 = r.ReadUInt32B();
+            antiPrereqs = r.ReadUInt32ArrayB();
+            antiCurrentPrereqs = r.ReadUInt32ArrayB();
+            antiEndings = r.ReadUInt32ArrayB();
+            unk3 = r.ReadUInt32B();
+            poiID = r.ReadUInt32B();
+            zoneID = r.ReadUInt32B();
+            zoneID2 = r.ReadUInt32B();
+            repeatableType = (RepeatableType) r.ReadUInt32B();
+            bestowals = r.ReadUInt32ArrayB();
+            guildID = r.ReadUInt32B();
+            guildRank = r.ReadUInt32B();
+            companionLevel = r.ReadUInt32B();
+            r.Seek(4);
+            icon = (Icon) r.ReadUInt32B();
+            r.Seek(8);
+            companionID = r.ReadUInt32B();
         }
     }
 }

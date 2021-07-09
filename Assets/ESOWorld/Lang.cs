@@ -10,7 +10,8 @@ namespace ESOWorld {
             ObjectiveText = 129979412,
             ObjectiveCompleteText = 108566804,
             Zone = 162658389,
-            ZoneLoadScreenText = 70901198
+            ZoneLoadScreenText = 70901198,
+            Quest = 52420949
         }
 
 

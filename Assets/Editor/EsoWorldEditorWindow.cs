@@ -124,12 +124,13 @@ public class EsoWorldEditorWindow : EditorWindow
     }
 
     void LoadFixtures(uint worldID) {
-        if(paths == null || paths.Count < 100) paths = Util.LoadWorldFiles();
+        //if(paths == null || paths.Count < 100) paths = Util.LoadWorldFiles();
         fixturePrefab = Resources.Load<GameObject>("FixturePrefab");
         mat = Resources.Load<Material>("FixtureMat");
         clnmat = Resources.Load<Material>("CLNMat");
 
         //unneccecary?
+        
         if (meshnames == null) {
             meshnames = new Dictionary<uint, string>();
             foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\meshids.txt")) {
@@ -137,7 +138,8 @@ public class EsoWorldEditorWindow : EditorWindow
                 meshnames[UInt32.Parse(words[0])] = words[1];
             }
         }
-
+        
+        Transform worldObj = new GameObject(worldID.ToString()).transform;
         Toc t = Toc.Read(paths[Util.WorldTocID(worldID)]);
         Layer l = t.layers[21];
         for (uint y = 0; y < l.cellsY; y++) {
@@ -147,6 +149,7 @@ public class EsoWorldEditorWindow : EditorWindow
                     if (fixtures.fixtures.Length == 0) continue;
                     Transform cell = new GameObject($"CELL {x},{y}:").transform;
                     cell.position = new Vector3(fixtures.fixtures[0].fixture.offsetX / 100, 0, fixtures.fixtures[0].fixture.offsetY / -100);
+                    cell.SetParent(worldObj, true);
                     ImportFixtures(fixtures, cell);
                 } else
                     Debug.Log("MISSING FIXTURE FILE");
@@ -164,6 +167,7 @@ public class EsoWorldEditorWindow : EditorWindow
         clnmat = Resources.Load<Material>("CLNMat");
 
         //unneccecary?
+        /*
         if (meshnames == null) {
             meshnames = new Dictionary<uint, string>();
             foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\meshids.txt")) {
@@ -171,6 +175,7 @@ public class EsoWorldEditorWindow : EditorWindow
                 meshnames[UInt32.Parse(words[0])] = words[1];
             }
         }
+        */
 
         if(paths.ContainsKey(Util.WorldFileID(worldID, 1))) {
             FixtureFile fixtures = FixtureFile.Open(paths[Util.WorldFileID(worldID, 1)]);
