@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace ESOWorld {
     public class Def {
@@ -11,6 +12,28 @@ namespace ESOWorld {
         public uint numRecords;
         public uint unk;
         public DefRow[] rows;
+
+        public enum DerivedStat : uint {
+            Damage = 2,
+            Armor = 3,
+            Magicka = 4,
+            Magicka_Recovery = 5,
+            Health = 7,
+            Health_Recovery = 8,
+            Healing_Taken = 10,
+            Healing_Done = 12,
+            Weapon_Critical = 16,
+            Spell_Critical = 23,
+            Critical_Resistance = 24,
+            Spell_Damage = 25,
+            Penetration = 27,
+            Weapon_Critical_2 = 28,
+            Stamina = 29,
+            Stamina_Recovery = 30,
+            Physical_Penetration = 33,
+            Spell_Penetration = 34,
+            Weapon_Damage = 35
+        }
 
         public DefRow Get(uint id) {
             for (int i = 0; i < rows.Length; i++) if (rows[i].id == id) return rows[i];
@@ -148,6 +171,106 @@ namespace ESOWorld {
             ReadHeader(r);
             type = r.ReadUInt32B();
         }
+    }
+
+    public class DefSet : DefData {
+        public struct Stat {
+            public uint requiredItems;
+            public uint stat;
+            public uint intValue;
+            public float floatValue;
+
+            public Stat(BinaryReader r) {
+                requiredItems = r.ReadUInt32B();
+                stat = r.ReadUInt32B();
+                intValue = r.ReadUInt32B();
+                floatValue = r.ReadSingle();
+			}
+		}
+
+        public struct Ability {
+            public uint requiredItems;
+            public uint ability1ID;
+            public uint ability2ID;
+
+            public Ability(BinaryReader r) {
+                ability1ID = r.ReadUInt32B();
+                ability2ID = r.ReadUInt32B();
+                requiredItems = r.ReadUInt32B();
+            }
+		}
+
+        public enum Type {
+            Unused = 0,
+            Craftable = 1,
+            Dungeon = 2,
+            Overland = 3,
+            Weapon = 4,
+            Monster = 5
+		}
+
+        public Stat[] stats;
+        public Ability[] abilities;
+        public Type type;
+        public uint[] itemIDs;
+        public uint equipTypes;
+        public uint unk3;
+        public uint unk4;
+        public uint unk5;
+        public uint unk6;
+        public uint category;
+        public uint parentSetID;
+
+        public DefSet(BinaryReader r) {
+            ReadHeader(r);
+            stats = new Stat[r.ReadUInt32B()];
+            for (int i = 0; i < stats.Length; i++) stats[i] = new Stat(r);
+            abilities = new Ability[r.ReadUInt32B()];
+            for (int i = 0; i < abilities.Length; i++) abilities[i] = new Ability(r);
+            type = (Type)r.ReadUInt32B();
+            itemIDs = r.ReadUInt32ArrayB();
+            equipTypes = r.ReadUInt32B();
+            unk3 = r.ReadUInt32B();
+            unk4 = r.ReadUInt32B();
+            unk5 = r.ReadUInt32B();
+            unk6 = r.ReadUInt32B();
+            category = r.ReadUInt32B();
+            parentSetID = r.ReadUInt32B();
+        }
+
+        public string GetEffectDescription(int piece, Lang l, string prefix = "") {
+            StringBuilder value = new StringBuilder();
+            for(int i = 0; i < stats.Length; i++) {
+                if(stats[i].requiredItems == piece) {
+                    value.Append(prefix);
+                    if(Enum.IsDefined(typeof( Def.DerivedStat), stats[i].stat)) {
+                        Def.DerivedStat stat = (Def.DerivedStat)stats[i].stat;
+                        string statName = stat.ToString().Replace('_', ' ');
+                        if(stat == Def.DerivedStat.Healing_Done || stat == Def.DerivedStat.Healing_Taken) value.Append($"+{stats[i].intValue}% {statName}");
+                        else value.Append($" +{Math.Ceiling(stats[i].floatValue * 66 * 1.30271f)} {statName}");
+
+                    } else value.Append($" +{stats[i].floatValue} {stats[i].stat }");
+                    value.Append('\n');
+				}
+			}
+            for (int i = 0; i < abilities.Length; i++) {
+                if (abilities[i].requiredItems == piece) {
+                    if (abilities[i].ability1ID != 0) {
+                        value.Append(prefix);
+                        value.Append(l.GetName(abilities[i].ability1ID, Lang.Entry.Ability).Replace('\r', ' ').Replace('\n', ' ').Replace("|cffffff", "").Replace("|r", ""));
+                        value.Append('\n');
+                    }
+
+                    if (abilities[i].ability2ID != 0 && abilities[i].ability2ID != abilities[i].ability1ID) {
+                        value.Append(prefix);
+                        value.Append(l.GetName(abilities[i].ability2ID, Lang.Entry.Ability).Replace('\r', ' ').Replace('\n', ' ').Replace("|cffffff", "").Replace("|r", ""));
+                        value.Append('\n');
+                    }
+
+                }
+            }
+            return value.ToString();
+		}
     }
 
     public class DefZone : DefData {

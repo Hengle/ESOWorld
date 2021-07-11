@@ -7,6 +7,29 @@ using System.IO;
 namespace ESOWorldTests {
     class Program {
         static void Main(string[] args) {
+
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\newlang\gamedata\lang\en.lang");
+            Def sets = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\6000000000000016_Uncompressed.EsoFileData", typeof(DefSet));
+            for(int i = 0; i < sets.rows.Length; i++) {
+                DefSet set = (DefSet)sets.rows[i].data;
+                string name = l.GetName(set.id, Lang.Entry.Set);
+                string type = set.type.ToString();
+                if (set.category == 86) type = "Mythic";
+                else if (set.category == 83 || set.category == 84 || set.category == 85) type = "PVP";
+                //Console.Write($"{set.id}^{name}^{set.type}^{set.category}^{l.GetName(set.category, Lang.Entry.SetCategory)}^");
+                Console.WriteLine($"{set.id}^{type}^{set.category}");
+
+                string effect = set.GetEffectDescription(1, l, $"{set.id}^{type}^{set.category}^{l.GetName(set.category, Lang.Entry.SetCategory)}^{name}^1 item: ");
+                if (effect != "") Console.Write(effect);
+                
+                for (int pieces = 2; pieces < 6; pieces++) {
+                    effect = set.GetEffectDescription(pieces, l, $"{set.id}^{type}^{set.category}^{l.GetName(set.category, Lang.Entry.SetCategory)}^{name}^{pieces} items: ");
+                    if (effect != "") Console.Write(effect);
+                }
+                //Console.WriteLine();
+            }
+
+
             /*
             Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\newlang\gamedata\lang\en.lang");
             Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
@@ -19,125 +42,125 @@ namespace ESOWorldTests {
             //var paths = Util.LoadWorldFiles();
             //HeightMontage(198, paths);
 
-                //var paths = Util.LoadWorldFiles();
-                //HeightMontage(475, paths);
+            //var paths = Util.LoadWorldFiles();
+            //HeightMontage(475, paths);
 
-                //Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
+            //Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
 
-                /*
-                Def quests = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\600000000000000A_Uncompressed.EsoFileData", typeof(DefQuest));
+            /*
+            Def quests = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\600000000000000A_Uncompressed.EsoFileData", typeof(DefQuest));
 
-                TextWriter w = new StreamWriter(File.Open("quests.csv", FileMode.Create));
-                Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\newlang\gamedata\lang\en.lang");
-                for(uint i = 0; i < quests.rows.Length; i++) {
-                    DefQuest quest = (DefQuest)quests.rows[i].data;
-                    if(quest.name != "")
-                    w.WriteLine($"{quest.id}|{quest.name}|{l.GetName(quest.id, Lang.Entry.Quest)}|{quest.zoneID}|{l.GetName(quest.zoneID, Lang.Entry.Zone)}|{quest.poiID}|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}|{quest.type}|{quest.repeatableType}|{quest.icon}");
-                   // if (quest.poiID != 0) w.Write($"|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}");
-                }
-                w.Flush(); w.Close();
-                */
-
-                /*
-                Def quests = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\600000000000000A_Uncompressed.EsoFileData", typeof(DefQuest));
-
-                TextWriter w = new StreamWriter(File.Open("quests.csv", FileMode.Create));
-                Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\newlang\gamedata\lang\en.lang");
-                for (uint i = 0; i < quests.rows.Length; i++) {
-                    DefQuest quest = (DefQuest)quests.rows[i].data;
-                    if (quest.name != "")
-                        w.WriteLine($"{quest.id}|{quest.name}|{l.GetName(quest.id, Lang.Entry.Quest)}|{quest.zoneID}|{l.GetName(quest.zoneID, Lang.Entry.Zone)}|{quest.poiID}|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}|{quest.type}|{quest.repeatableType}|{quest.icon}");
-                    // if (quest.poiID != 0) w.Write($"|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}");
-                }
-                w.Flush(); w.Close();
-                */
-
-                //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\", @"F:\Extracted\ESO\y0defnames\");
-                //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\", @"F:\Extracted\ESO\bwdefnames\");
-                //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\tudata\database\", @"F:\Extracted\ESO\tudefnames\");
-                //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\database\", @"F:\Extracted\ESO\defnames\ic\");
-                //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world\", @"F:\Extracted\ESO\y0toc\");
-                //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\", @"F:\Extracted\ESO\bwtoc\");
-                //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\world\", @"F:\Extracted\ESO\toc\ic\");
-                //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\tudata\world\", @"F:\Extracted\ESO\toc\tu\");
-
-                /*
-                Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\6000000000000044_Uncompressed.EsoFileData", typeof(DefPointOfInterest));
-                using(TextWriter w = new StreamWriter(File.Open(@"F:\Extracted\ESO\y0tilemaps.txt", FileMode.Create))) {
-                    for(int i = 0; i < tilemaps.rows.Length; i++) {
-                        DefPointOfInterest tilemap = (DefPointOfInterest)tilemaps.rows[i].data;
-                        if(tilemap.name.Length > 0) w.WriteLine($"{tilemap.type}|{tilemap.id}|{tilemap.name}");
-                    }
-                }
-                */
-                //Console.WriteLine( Util.WorldCellFilename(494, 21, 9, 9));
-
-                /*
-                Def worlds = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\600000000000003C_Uncompressed.EsoFileData");
-                foreach(string path in Directory.EnumerateFiles(@"F:\Extracted\ESO\y0toc")) {
-                    uint id = UInt32.Parse(Path.GetFileNameWithoutExtension(path));
-                    string toPrint = id.ToString();
-                    for(int i = 0; i < worlds.rows.Length; i++) {
-                        if(worlds.rows[i].data.id == id) {
-                            toPrint = $"{id} {worlds.rows[i].data.name}";
-                            break;
-                        }
-                    }
-                    Console.WriteLine(toPrint);
-                }
-                */
-
-                /* (TextWriter writer = new StreamWriter(File.Open(@"F:\Extracted\ESO\y0fixturefiles.txt", FileMode.Create))) {
-                    foreach (string path in Directory.EnumerateFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\world", "*.dat", SearchOption.AllDirectories)) {
-                        if (Path.GetFileName(path).StartsWith("4000")) {
-                            string name = Util.WorldFileDesc(UInt64.Parse(Path.GetFileNameWithoutExtension(path), System.Globalization.NumberStyles.HexNumber));
-                            if (name.Contains("fixture")) File.Copy(path, @"F:\Extracted\ESO\fixturefile\ic\" + name);
-                        }
-                    }
-                //}
-                */
-
-                /*
-                HashSet<string> y0 = new HashSet<string>();
-                foreach (string path in Directory.EnumerateFiles(@"F:\Extracted\ESO\fixturefile\tu")) y0.Add(Path.GetFileName(path));
-                foreach(string path in Directory.EnumerateFiles(@"F:\Extracted\ESO\fixturefile\ic")) {
-                    string name = Path.GetFileName(path);
-                    if(y0.Contains(name)) {
-                        FileInfo newInfo = new FileInfo(path);
-                        FileInfo oldInfo = new FileInfo(@"F:\Extracted\ESO\fixturefile\tu\" + name);
-                        if(Math.Abs(newInfo.Length - oldInfo.Length) > 1023) {
-                            Console.WriteLine($"{name} {(newInfo.Length - oldInfo.Length) / 1024}");
-                        }
-                    } else {
-                        FileInfo newInfo = new FileInfo(path);
-                        Console.WriteLine($"{name} {newInfo.Length / 1024} (NEW)");
-                    }
-                }
-                */
-
-                
-                var paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world");
-                //@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world"
-                //CopyCellFiles(426, paths);
-
-                for (uint i = 50; i < 1300; i++) {
-                    if (paths.ContainsKey(Util.WorldTocID(i))) {
-                        Console.WriteLine(i);
-                        ExportTerrainCols(i, paths);
-                    }
-                }
-                
-
-                //ExportTerrainCols(575, paths);
-                /*
-                var heights = f.GetHeights();
-                for(int i = 0; i < 65; i++) {
-                    Console.Write(heights[i, 0]);
-                    Console.Write(' ');
-                }
-                */
-
+            TextWriter w = new StreamWriter(File.Open("quests.csv", FileMode.Create));
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\newlang\gamedata\lang\en.lang");
+            for(uint i = 0; i < quests.rows.Length; i++) {
+                DefQuest quest = (DefQuest)quests.rows[i].data;
+                if(quest.name != "")
+                w.WriteLine($"{quest.id}|{quest.name}|{l.GetName(quest.id, Lang.Entry.Quest)}|{quest.zoneID}|{l.GetName(quest.zoneID, Lang.Entry.Zone)}|{quest.poiID}|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}|{quest.type}|{quest.repeatableType}|{quest.icon}");
+               // if (quest.poiID != 0) w.Write($"|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}");
             }
+            w.Flush(); w.Close();
+            */
+
+            /*
+            Def quests = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\600000000000000A_Uncompressed.EsoFileData", typeof(DefQuest));
+
+            TextWriter w = new StreamWriter(File.Open("quests.csv", FileMode.Create));
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\newlang\gamedata\lang\en.lang");
+            for (uint i = 0; i < quests.rows.Length; i++) {
+                DefQuest quest = (DefQuest)quests.rows[i].data;
+                if (quest.name != "")
+                    w.WriteLine($"{quest.id}|{quest.name}|{l.GetName(quest.id, Lang.Entry.Quest)}|{quest.zoneID}|{l.GetName(quest.zoneID, Lang.Entry.Zone)}|{quest.poiID}|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}|{quest.type}|{quest.repeatableType}|{quest.icon}");
+                // if (quest.poiID != 0) w.Write($"|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}");
+            }
+            w.Flush(); w.Close();
+            */
+
+            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\", @"F:\Extracted\ESO\y0defnames\");
+            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\", @"F:\Extracted\ESO\bwdefnames\");
+            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\tudata\database\", @"F:\Extracted\ESO\tudefnames\");
+            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\database\", @"F:\Extracted\ESO\defnames\ic\");
+            //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world\", @"F:\Extracted\ESO\y0toc\");
+            //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\", @"F:\Extracted\ESO\bwtoc\");
+            //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\world\", @"F:\Extracted\ESO\toc\ic\");
+            //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\tudata\world\", @"F:\Extracted\ESO\toc\tu\");
+
+            /*
+            Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\6000000000000044_Uncompressed.EsoFileData", typeof(DefPointOfInterest));
+            using(TextWriter w = new StreamWriter(File.Open(@"F:\Extracted\ESO\y0tilemaps.txt", FileMode.Create))) {
+                for(int i = 0; i < tilemaps.rows.Length; i++) {
+                    DefPointOfInterest tilemap = (DefPointOfInterest)tilemaps.rows[i].data;
+                    if(tilemap.name.Length > 0) w.WriteLine($"{tilemap.type}|{tilemap.id}|{tilemap.name}");
+                }
+            }
+            */
+            //Console.WriteLine( Util.WorldCellFilename(494, 21, 9, 9));
+
+            /*
+            Def worlds = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\600000000000003C_Uncompressed.EsoFileData");
+            foreach(string path in Directory.EnumerateFiles(@"F:\Extracted\ESO\y0toc")) {
+                uint id = UInt32.Parse(Path.GetFileNameWithoutExtension(path));
+                string toPrint = id.ToString();
+                for(int i = 0; i < worlds.rows.Length; i++) {
+                    if(worlds.rows[i].data.id == id) {
+                        toPrint = $"{id} {worlds.rows[i].data.name}";
+                        break;
+                    }
+                }
+                Console.WriteLine(toPrint);
+            }
+            */
+
+            /* (TextWriter writer = new StreamWriter(File.Open(@"F:\Extracted\ESO\y0fixturefiles.txt", FileMode.Create))) {
+                foreach (string path in Directory.EnumerateFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\world", "*.dat", SearchOption.AllDirectories)) {
+                    if (Path.GetFileName(path).StartsWith("4000")) {
+                        string name = Util.WorldFileDesc(UInt64.Parse(Path.GetFileNameWithoutExtension(path), System.Globalization.NumberStyles.HexNumber));
+                        if (name.Contains("fixture")) File.Copy(path, @"F:\Extracted\ESO\fixturefile\ic\" + name);
+                    }
+                }
+            //}
+            */
+
+            /*
+            HashSet<string> y0 = new HashSet<string>();
+            foreach (string path in Directory.EnumerateFiles(@"F:\Extracted\ESO\fixturefile\tu")) y0.Add(Path.GetFileName(path));
+            foreach(string path in Directory.EnumerateFiles(@"F:\Extracted\ESO\fixturefile\ic")) {
+                string name = Path.GetFileName(path);
+                if(y0.Contains(name)) {
+                    FileInfo newInfo = new FileInfo(path);
+                    FileInfo oldInfo = new FileInfo(@"F:\Extracted\ESO\fixturefile\tu\" + name);
+                    if(Math.Abs(newInfo.Length - oldInfo.Length) > 1023) {
+                        Console.WriteLine($"{name} {(newInfo.Length - oldInfo.Length) / 1024}");
+                    }
+                } else {
+                    FileInfo newInfo = new FileInfo(path);
+                    Console.WriteLine($"{name} {newInfo.Length / 1024} (NEW)");
+                }
+            }
+            */
+
+            /*
+            var paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world");
+            //@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world"
+            //CopyCellFiles(426, paths);
+
+            for (uint i = 50; i < 1300; i++) {
+                if (paths.ContainsKey(Util.WorldTocID(i))) {
+                    Console.WriteLine(i);
+                    ExportTerrainCols(i, paths);
+                }
+            }
+            */
+
+            //ExportTerrainCols(575, paths);
+            /*
+            var heights = f.GetHeights();
+            for(int i = 0; i < 65; i++) {
+                Console.Write(heights[i, 0]);
+                Console.Write(' ');
+            }
+            */
+
+        }
 
         static void ExportZoneColors() {
             int cellHeight = 32;

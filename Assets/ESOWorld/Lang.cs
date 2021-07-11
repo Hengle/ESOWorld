@@ -11,7 +11,10 @@ namespace ESOWorld {
             ObjectiveCompleteText = 108566804,
             Zone = 162658389,
             ZoneLoadScreenText = 70901198,
-            Quest = 52420949
+            Quest = 52420949,
+            Ability = 132143172,
+            Set = 38727365,
+            SetCategory = 121975845
         }
 
 
