@@ -173,6 +173,21 @@ namespace ESOWorld {
         }
     }
 
+    public class DefItemPartMaterial : DefData {
+        public uint id1;
+        public uint id2;
+        public uint id3;
+        public uint id4;
+
+        public DefItemPartMaterial(BinaryReader r) {
+            ReadHeader(r);
+            id1 = r.ReadUInt32B();
+            id2 = r.ReadUInt32B();
+            id3 = r.ReadUInt32B();
+            id4 = r.ReadUInt32B();
+        }
+    }
+
     public class DefSet : DefData {
         public struct Stat {
             public uint requiredItems;

@@ -29,7 +29,7 @@ public class EsoWorldEditorWindow : EditorWindow
     private void OnGUI() {
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Load Paths")) {
-            paths = Util.LoadWorldFiles();
+            paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world\");
             pathCount = paths.Count;
         }
         EditorGUILayout.IntField(pathCount);
@@ -242,8 +242,8 @@ public class EsoWorldEditorWindow : EditorWindow
         int exported = 0;
         foreach(uint model in models) {
             if (!File.Exists($@"F:\Anna\Files\Unity\esoworldedit\Assets\Resources\{model}.obj") &&
-                File.Exists($@"F:\Extracted\ESO\Granny\{model}.gr2")) {
-                args.Append($" \"F:\\Extracted\\ESO\\Granny\\{model}.gr2\"");
+                File.Exists($@"F:\Extracted\ESO\model\{model}.gr2")) {
+                args.Append($" \"F:\\Extracted\\ESO\\model\\{model}.gr2\"");
                 exported++;
                 if (exported >= 512) break;
             }

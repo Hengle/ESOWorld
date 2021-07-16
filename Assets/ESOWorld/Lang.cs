@@ -14,7 +14,8 @@ namespace ESOWorld {
             Quest = 52420949,
             Ability = 132143172,
             Set = 38727365,
-            SetCategory = 121975845
+            SetCategory = 121975845,
+            ItemVisualStyle = 98383029
         }
 
 
@@ -41,19 +42,31 @@ namespace ESOWorld {
             return offsets.ContainsKey(((ulong)type << 32) + id);
         }
 
-        public string GetName(uint id, Entry type) {
-            ulong key = ((ulong)type << 32) + id;
-            if(offsets.ContainsKey(key)) {
+        string GetName(ulong key) {
+            if (offsets.ContainsKey(key)) {
                 reader.BaseStream.Seek(offsets[key] + textOffset, SeekOrigin.Begin);
                 return reader.ReadStringNullTerminated();
             }
             return "";
         }
 
+        public string GetName(uint id, Entry type) {
+            return GetName(((ulong)type << 32) + id);
+        }
+
         ~Lang() {
             if(reader != null) reader.Close();
         }
 
+        public void ToCsv(string path) {
+            using (TextWriter w = new StreamWriter(File.Open(path, FileMode.Create))) {
+                foreach (ulong id in offsets.Keys) {
+                    int shortid = (int)(id >> 32);
+                    if (Enum.IsDefined(typeof(Entry), shortid) && shortid != (int)Entry.Ability)
+                        w.WriteLine($"{(Entry)shortid}\t{id & uint.MaxValue}\t{GetName(id)}");
+                }
+                w.Flush();
+            }
+        }
     }
-
 }
