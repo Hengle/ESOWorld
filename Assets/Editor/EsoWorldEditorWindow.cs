@@ -29,7 +29,7 @@ public class EsoWorldEditorWindow : EditorWindow
     private void OnGUI() {
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Load Paths")) {
-            paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world\");
+            paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\");
             pathCount = paths.Count;
         }
         EditorGUILayout.IntField(pathCount);
@@ -146,7 +146,7 @@ public class EsoWorldEditorWindow : EditorWindow
             for (uint x = 0; x < l.cellsX; x++) {
                 if (paths.ContainsKey(Util.WorldCellID(worldID, 21, x, y))) {
                     FixtureFile fixtures = FixtureFile.Open(paths[Util.WorldCellID(worldID, 21, x, y)]);
-                    if (fixtures.fixtures.Length == 0) continue;
+                    if (fixtures == null || fixtures.fixtures == null || fixtures.fixtures.Length == 0) continue;
                     Transform cell = new GameObject($"CELL {x},{y}:").transform;
                     cell.position = new Vector3(fixtures.fixtures[0].fixture.offsetX / 100, 0, fixtures.fixtures[0].fixture.offsetY / -100);
                     cell.SetParent(worldObj, true);

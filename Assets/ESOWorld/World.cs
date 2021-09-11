@@ -124,6 +124,10 @@ namespace ESOWorld {
         public RTree bvh4;
 
         public FixtureFile(BinaryReader r) {
+            if (r.PeekChar() == -1) {
+                fixtures = new FixturePlaced[0];
+                return;
+			}
             version = r.ReadUInt32();
             fixtures = new FixturePlaced[r.ReadUInt32()];
             for(int i = 0; i < fixtures.Length; i++) {

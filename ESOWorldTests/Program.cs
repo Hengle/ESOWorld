@@ -12,7 +12,7 @@ namespace ESOWorldTests {
             //Lang y0l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\gamedata\lang\en.lang");
             //y0l.ToCsv("y0csv.txt");
 
-            ExportZoneLoadscreens();
+            //ExportZoneLoadscreens();
             /*
             Def mats = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\database\6000000000000050_Uncompressed.EsoFileData", typeof(DefItemPartMaterial));
             using(TextWriter w = new StreamWriter(File.Open("equipmenttex.txt", FileMode.Create))) {
@@ -69,8 +69,9 @@ namespace ESOWorldTests {
                 Console.WriteLine($"{zone.id}|{worlds.Get(zone.worldID).id}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}");
             }
             */
+            //Console.WriteLine(Util.WorldCellFilename(43, 21, 6, 12));
             //var paths = Util.LoadWorldFiles();
-            //HeightMontage(198, paths);
+            //HeightMontage(43, paths);
 
             //var paths = Util.LoadWorldFiles();
             //HeightMontage(475, paths);
@@ -110,6 +111,7 @@ namespace ESOWorldTests {
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\tudata\database\", @"F:\Extracted\ESO\tudefnames\");
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\database\", @"F:\Extracted\ESO\defnames\ic\");
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\database\", @"F:\Extracted\ESO\defnames\wf\");
+            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\000\", @"F:\Extracted\ESO\defnames\wfrelease\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world\", @"F:\Extracted\ESO\y0toc\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\", @"F:\Extracted\ESO\bwtoc\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\world\", @"F:\Extracted\ESO\toc\ic\");
@@ -125,6 +127,14 @@ namespace ESOWorldTests {
             }
             */
             //Console.WriteLine( Util.WorldCellFilename(494, 21, 9, 9));
+
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\gamedata\lang\en.lang");
+            Def books = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\000\6000000000000097_Uncompressed.EsoFileData", typeof(DefBook));
+            for (int i = 0; i < books.rows.Length; i++) {
+                DefBook book = (DefBook)books.rows[i].data;
+                if(!l.GetName(book.id, Lang.Entry.BookTitle).StartsWith("Crafting Motif"))
+                Console.WriteLine($"{book.id}|{l.GetName(book.id, Lang.Entry.BookTitle)}|{book.name}|{book.updateTag}|{l.GetName(book.collectionID, Lang.Entry.BookCollection)}");
+            }
 
             /*
             Def worlds = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\600000000000003C_Uncompressed.EsoFileData");
@@ -337,6 +347,7 @@ namespace ESOWorldTests {
             }
 
             foreach (string path in Directory.EnumerateFiles(folder, "*.EsoFileData")) {
+                if (!Path.GetFileName(path).Contains("Uncompressed")) continue;
                 ulong id = UInt64.Parse(Path.GetFileName(path).Split('_')[0], System.Globalization.NumberStyles.HexNumber);
                 uint shortID = (uint)(id & uint.MaxValue);
                 string filename = defmanes.ContainsKey(shortID) ? defmanes[shortID] + "_" + Path.GetFileNameWithoutExtension(path) : Path.GetFileNameWithoutExtension(path);
@@ -458,7 +469,13 @@ namespace ESOWorldTests {
             montage.BackgroundColor = MagickColors.Black;
             montage.Write(string.Format(@"F:\Extracted\ESO\heights\{0:0000}_height_{1}x{2}.png", worldID, montage.Width, montage.Height));
             int resize = Math.Max(NextPow2(montage.Width) + 1, NextPow2(montage.Height) + 1);
-            montage.Extent(resize, resize, Gravity.Southwest);
+            if(resize == 8193) {
+                Console.WriteLine("8193 too big, resizing to 4097");
+                montage.Scale(new Percentage(50));
+                montage.Extent(4097, 4097, Gravity.Southwest);
+            } else {
+                montage.Extent(resize, resize, Gravity.Southwest);
+            }
             Console.WriteLine("saving...");
 
             montage.Write(string.Format(@"F:\Extracted\ESO\heights\{0:0000}_height_{1}x{2}.gray", worldID, montage.Width, montage.Height));

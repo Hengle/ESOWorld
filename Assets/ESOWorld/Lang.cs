@@ -15,7 +15,10 @@ namespace ESOWorld {
             Ability = 132143172,
             Set = 38727365,
             SetCategory = 121975845,
-            ItemVisualStyle = 98383029
+            ItemVisualStyle = 98383029,
+            BookTitle = 51188213,
+            BookContents = 21337012,
+            BookCollection = 236931909
         }
 
 
@@ -51,7 +54,8 @@ namespace ESOWorld {
         }
 
         public string GetName(uint id, Entry type) {
-            return GetName(((ulong)type << 32) + id);
+            string name = GetName(((ulong)type << 32) + id);
+            return name == "" ? id.ToString() : name;
         }
 
         ~Lang() {

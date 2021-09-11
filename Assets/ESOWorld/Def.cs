@@ -56,7 +56,8 @@ namespace ESOWorld {
 
                 int i = 0;
                 List<DefRow> rowList = new List<DefRow>((int)numRecords);
-                while(i < numRecords && r.BaseStream.Position < r.BaseStream.Length) {
+                //while(i < numRecords && r.BaseStream.Position < r.BaseStream.Length) {
+                while (r.BaseStream.Position < r.BaseStream.Length) {
                     rowList.Add(new DefRow(r, dataType));
                 }
                 rows = rowList.ToArray();
@@ -188,6 +189,16 @@ namespace ESOWorld {
         }
     }
 
+    public class DefBook : DefData {
+        public uint collectionID;
+
+        public DefBook(BinaryReader r) {
+            ReadHeader(r);
+            r.Seek(r.ReadUInt32B() * 8);
+            r.Seek(8);
+            collectionID = r.ReadUInt32B();
+		}
+	}
     public class DefSet : DefData {
         public struct Stat {
             public uint requiredItems;
