@@ -6,7 +6,53 @@ using System.IO;
 
 namespace ESOWorldTests {
     class Program {
+
+        struct Size {
+            public uint x;
+            public uint y;
+        }
+
         static void Main(string[] args) {
+            //Console.WriteLine(Util.WorldFileDesc(UInt64.Parse("400092E00003000A", System.Globalization.NumberStyles.HexNumber)));
+            //FixtureSizeMap(1207, 32);
+            //FixtureSizeMap(31, 20);
+
+            /*
+            Dictionary<uint, Size> worldSizes = new Dictionary<uint, Size>();
+            foreach (string line in File.ReadAllLines(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlhiddenworld.txt")) {
+                Util.WorldFileData file = new Util.WorldFileData( UInt64.Parse(line.Split('\t')[0], System.Globalization.NumberStyles.HexNumber));
+                if(file.type == 1 && file.layer == 1) {
+                    if(!worldSizes.ContainsKey(file.worldID)) {
+                        worldSizes[file.worldID] = new Size() { x = file.x, y = file.y };
+					} else {
+                        if (worldSizes[file.worldID].x < file.x) worldSizes[file.worldID] = new Size() { x = file.x, y = worldSizes[file.worldID].y };
+                        if (worldSizes[file.worldID].y < file.y) worldSizes[file.worldID] = new Size() { y = file.y, x = worldSizes[file.worldID].x };
+                    }
+				}
+            }
+            foreach(uint world in worldSizes.Keys) {
+                Console.WriteLine($"{world}|{worldSizes[world].x * 100}|{worldSizes[world].y * 100}");
+			}
+            */
+
+
+
+
+            //foreach (string line in File.ReadAllLines(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlhiddenworld.txt")) {
+            //    string[] words = line.Split('\t');
+            //    Console.WriteLine($"{Util.WorldFileDesc(UInt64.Parse(words[0], System.Globalization.NumberStyles.HexNumber))}|{words[2]}");
+            //}
+
+            /*
+            foreach (string line in File.ReadAllLines(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\zosftdl.txt")) {
+                string[] words = line.Split('|');
+                if (words.Length != 2) {
+                    Console.WriteLine($"NOT 2 WORDS {line}");
+                    continue;
+                }
+                if (!File.Exists(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts" + words[1]))  Console.WriteLine($"{uint.Parse(words[0], System.Globalization.NumberStyles.HexNumber)}|{words[1]}");
+            }
+            */
             //Lang wfl = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\gamedata\lang\en.lang");
             //wfl.ToCsv("wfcsv.txt");
             //Lang y0l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\gamedata\lang\en.lang");
@@ -25,15 +71,15 @@ namespace ESOWorldTests {
                     if (mat.id4 != 0) w.WriteLine($"{mat.id4} {name}_tint");
                 }
             }
-            */
-            /*
-            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\gamedata\lang\en.lang");
-            Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\database\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
-            Def worlds = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\database\600000000000003C_Uncompressed.EsoFileData");
+            *//*
+            
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang");
+            Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
+            Def worlds = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\600000000000003C_Uncompressed.EsoFileData");
             for (int i = 0; i < zones.rows.Length; i++) { //zones.rows.Length
                 DefZone zone = (DefZone)zones.rows[i].data;
-                //Console.WriteLine($"{zone.id}|{worlds.Get(zone.worldID).id}|{zone.loadingScreenID}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}|{l.GetName(zone.id, Lang.Entry.ZoneLoadScreenText)}");
-                Console.WriteLine(l.GetName(zone.id, Lang.Entry.ZoneLoadScreenText));
+                Console.WriteLine($"{zone.id}|{worlds.Get(zone.worldID).id}|{zone.loadingScreenID}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}|{l.GetName(zone.id, Lang.Entry.ZoneLoadScreenText)}");
+                //Console.WriteLine($"{zone.id}|{l.GetName(zone.id, Lang.Entry.Zone)}|{l.GetName(zone.id, Lang.Entry.ZoneLoadScreenText)});
             }
             */
 
@@ -78,11 +124,16 @@ namespace ESOWorldTests {
 
             //Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
 
+            //var paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\world\");
+            //LodMontage(1173, paths);
+            //LodMontage(1193, paths);
+
+
             /*
-            Def quests = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\600000000000000A_Uncompressed.EsoFileData", typeof(DefQuest));
+            Def quests = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\600000000000000A_Uncompressed.EsoFileData", typeof(DefQuest));
 
             TextWriter w = new StreamWriter(File.Open("quests.csv", FileMode.Create));
-            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\newlang\gamedata\lang\en.lang");
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang");
             for(uint i = 0; i < quests.rows.Length; i++) {
                 DefQuest quest = (DefQuest)quests.rows[i].data;
                 if(quest.name != "")
@@ -112,22 +163,33 @@ namespace ESOWorldTests {
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\database\", @"F:\Extracted\ESO\defnames\ic\");
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\database\", @"F:\Extracted\ESO\defnames\wf\");
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\000\", @"F:\Extracted\ESO\defnames\wfrelease\");
+            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts2\000\", @"F:\Extracted\ESO\defnames\dlpts2\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world\", @"F:\Extracted\ESO\y0toc\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\", @"F:\Extracted\ESO\bwtoc\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\world\", @"F:\Extracted\ESO\toc\ic\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\tudata\world\", @"F:\Extracted\ESO\toc\tu\");
-
             /*
-            Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\6000000000000044_Uncompressed.EsoFileData", typeof(DefPointOfInterest));
+
+            ListPOI();
+
+            HashSet<uint> hiddenIDs = new HashSet<uint>();
+            foreach (string line in File.ReadAllLines(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\hiddentoc.txt")) {
+                hiddenIDs.Add((uint)(ulong.Parse(line, System.Globalization.NumberStyles.HexNumber) & 0xffffffff));
+
+            }
+
+            Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
             using(TextWriter w = new StreamWriter(File.Open(@"F:\Extracted\ESO\y0tilemaps.txt", FileMode.Create))) {
                 for(int i = 0; i < tilemaps.rows.Length; i++) {
-                    DefPointOfInterest tilemap = (DefPointOfInterest)tilemaps.rows[i].data;
-                    if(tilemap.name.Length > 0) w.WriteLine($"{tilemap.type}|{tilemap.id}|{tilemap.name}");
+                    DefDataWorldTileMap tilemap = (DefDataWorldTileMap)tilemaps.rows[i].data;
+                    if (hiddenIDs.Contains(tilemap.worldID)) Console.WriteLine($"{tilemap.worldID}|{tilemap.name}");
+                    //if(tilemap.name.Length > 0) w.WriteLine($"{tilemap.type}|{tilemap.id}|{tilemap.name}");
                 }
             }
             */
-            //Console.WriteLine( Util.WorldCellFilename(494, 21, 9, 9));
 
+            //Console.WriteLine( Util.WorldCellFilename(494, 21, 9, 9));
+            /*
             Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\gamedata\lang\en.lang");
             Def books = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\000\6000000000000097_Uncompressed.EsoFileData", typeof(DefBook));
             for (int i = 0; i < books.rows.Length; i++) {
@@ -135,7 +197,7 @@ namespace ESOWorldTests {
                 if(!l.GetName(book.id, Lang.Entry.BookTitle).StartsWith("Crafting Motif"))
                 Console.WriteLine($"{book.id}|{l.GetName(book.id, Lang.Entry.BookTitle)}|{book.name}|{book.updateTag}|{l.GetName(book.collectionID, Lang.Entry.BookCollection)}");
             }
-
+            */
             /*
             Def worlds = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\600000000000003C_Uncompressed.EsoFileData");
             foreach(string path in Directory.EnumerateFiles(@"F:\Extracted\ESO\y0toc")) {
@@ -179,18 +241,18 @@ namespace ESOWorldTests {
             }
             */
 
-            /*
-            var paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world");
+            
+            var paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\world");
             //@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world"
             //CopyCellFiles(426, paths);
 
-            for (uint i = 50; i < 1300; i++) {
+            for (uint i = 1171; i < 1300; i++) {
                 if (paths.ContainsKey(Util.WorldTocID(i))) {
                     Console.WriteLine(i);
                     ExportTerrainCols(i, paths);
                 }
             }
-            */
+            
 
             //ExportTerrainCols(575, paths);
             /*
@@ -203,12 +265,36 @@ namespace ESOWorldTests {
 
         }
 
+        static void FixtureSizeMap (uint id, int size, string name = "") {
+
+            int[] sizes = new int[size * size];
+
+            int max = 0;
+            foreach (string line in File.ReadAllLines(@"F:\Anna\Files\Unity\esoworldedit\ESOWorldTests\bin\Debug\hiddenworld.txt")) {
+                if (!line.StartsWith($"{id}_grass_")) continue;
+                int fileSize = int.Parse(line.Split('|')[1]) - 20;
+                int x = int.Parse(line.Split('_')[2]);
+                int y = int.Parse(line.Split('_', '.')[3]);
+                sizes[x + size * y] = fileSize;
+                if (fileSize > max) max = fileSize;
+            }
+
+            byte[] data = new byte[size * size];
+            for (int i = 0; i < data.Length; i++) {
+                data[i] = (byte)((sizes[i] * 255) / max);
+            }
+
+            MagickReadSettings settings = new MagickReadSettings() { Width = size, Height = size, Format = MagickFormat.Gray, Depth = 8 };
+            MagickImage image = new MagickImage(data, settings);
+            if (name == "") name = id.ToString();
+            image.Write($"{name}.png");
+        }
         static void ExportZoneLoadscreens() {
             int cellHeight = 66;
             int cellWidth = 433;
             int cellsY = 64;
-            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\gamedata\lang\en.lang");
-            Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\database\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang");
+            Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
             MagickImage image = new MagickImage(MagickColors.Black, cellWidth * (zones.rows.Length / cellsY + 1), cellHeight * cellsY);
             //MagickImage zero = new MagickImage();
             int pos = 0;
@@ -217,6 +303,7 @@ namespace ESOWorldTests {
                 DefZone zone = (DefZone)zones.rows[i].data;
                 if (zone.loadingScreenID == 0) continue;
                 MagickImage loadscreen = new MagickImage($@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\loadscreen\small\{zone.loadingScreenID}.png");
+                loadscreen.Resize(105, 66);
                 //MagickImage loadscreen = zone.loadingScreenID != 0 ?
                 //    new MagickImage($@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\loadscreen\small\{zone.loadingScreenID}.png") :
                 //    zero;
@@ -367,7 +454,10 @@ namespace ESOWorldTests {
             Dictionary<uint, string> objectiveText = new Dictionary<uint, string>();
             Dictionary<uint, string> objectiveCompleteText = new Dictionary<uint, string>();
 
-            using (TextReader r = new StreamReader(File.OpenRead(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\gamedata\lang\en.lang.csv"))) {
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang");
+
+            /*
+            using (TextReader r = new StreamReader(File.OpenRead(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang.csv"))) {
                 while(r.Peek() != -1) {
                     string[] words = r.ReadLine().Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
                     if (words[0] == "10860933") {
@@ -382,12 +472,13 @@ namespace ESOWorldTests {
                     } 
                 }
             }
-            Def pois = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\600000000000004A_Uncompressed.EsoFileData", typeof(DefPointOfInterest));
+            */
+            Def pois = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\600000000000004A_Uncompressed.EsoFileData", typeof(DefPointOfInterest));
             using (TextWriter w = new StreamWriter(File.Open("poitext.csv", FileMode.Create))) {
                 for(int i = 0; i < pois.rows.Length; i++) {
                     var poi = (DefPointOfInterest)pois.rows[i].data;
                     uint id = poi.id;
-                    w.WriteLine($"{id}\t{poi.type}\t{poiNames[id]}");
+                    w.WriteLine($"{id}\t{poi.type}\t{poi.name}\t{l.GetName(id, Lang.Entry.PointOfInterest)}\t{l.GetName(id, Lang.Entry.ObjectiveText)}\t{l.GetName(id, Lang.Entry.ObjectiveCompleteText)}");
                     //if (objectiveText.ContainsKey(id) && objectiveCompleteText.ContainsKey(id)) {
                     //    w.WriteLine($"{id}\t{poi.type}\t{poiNames[id]}\t{objectiveText[id]}\t{objectiveCompleteText[id]}");
                     //}

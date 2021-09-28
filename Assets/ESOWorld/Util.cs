@@ -53,5 +53,46 @@ namespace ESOWorld {
 
             return "";
         }
+
+
+        public struct WorldFileData {
+            public uint type; //0 = toc, 1 = cell, 2 = file
+            public uint worldID;
+            public uint layer;
+            public uint x;
+            public uint y;
+
+            public WorldFileData(ulong id) {
+                type = 3; worldID = 0; layer = 0; x = 0; y = 0;
+                if ((id >> 120) == 0x44) {
+                    type = 0;
+                    worldID = (uint)(id & 0xffff);
+                    
+                }
+                if ((id >> 120) == 0x40 || (id >> 120) == 0x48) {
+                    type = 2;
+                    worldID = (uint)((id >> 37) & 0x7ff);
+                    layer = (uint)((id >> 32) & 0x1f);
+
+                    if ((id >> 120) == 0x40) {
+                        type = 1;
+                        x = (uint)((id >> 16) & 0xffff);
+                        y = (uint)(id & 0xffff);
+                    }
+                }
+            }
+		}
+
+        public static int NextPow2(int i) {
+            int ret = 64;
+            while (ret < i) ret = ret * 2;
+            return ret;
+        }
+
+        public static int NextPow2(uint i) {
+            int ret = 64;
+            while (ret < i) ret = ret * 2;
+            return ret;
+        }
     }
 }
