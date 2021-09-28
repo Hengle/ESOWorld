@@ -29,13 +29,16 @@ public class EsoWorldEditorWindow : EditorWindow
     private void OnGUI() {
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Load Paths")) {
-            paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\");
+            paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\world");
             pathCount = paths.Count;
         }
         EditorGUILayout.IntField(pathCount);
         EditorGUILayout.EndHorizontal();
         rokmat = (Material)EditorGUILayout.ObjectField(rokmat, typeof(Material));
         worldID = (uint)EditorGUILayout.IntField("World:", (int)worldID);
+        if (GUILayout.Button("Load Terrain")) {
+            LoadTerrain(worldID);
+        }
         if (GUILayout.Button("Import Models")) {
             GatherMeshes(worldID);
         }
@@ -56,10 +59,72 @@ public class EsoWorldEditorWindow : EditorWindow
         }
     }
 
+    void LoadTerrain(uint worldID) {
+        Toc t = Toc.Read(paths[Util.WorldTocID(worldID)]);
+        Layer l = t.layers[1];
+
+        int terrainRes = Math.Max(Util.NextPow2(64 * l.cellsX) + 1, Util.NextPow2(64 * l.cellsY) + 1);
+        if(terrainRes > 4097) {
+            Debug.LogError($"TERRAIN TOO BIG {terrainRes}");
+            return;
+		}
+
+        float[,] fullHeights = new float[terrainRes, terrainRes];
+
+        float maxHeight = 0;
+        for (uint y = 0; y < l.cellsY; y++) {
+            for (uint x = 0; x < l.cellsX; x++) {
+                if (paths.ContainsKey(Util.WorldCellID(worldID, 1, x, y))) {
+                    float[] heights = ReadTerrainHeights(paths[Util.WorldCellID(worldID, 1, x, y)]);
+                    for (int u = 0; u < 64; u++) {
+                        for (int v = 0; v < 64; v++) {
+                            //aaaaaaaaaaahhhhh
+                            fullHeights[terrainRes - u - 1 - y * 64, v + x * 64] = heights[u + v * 65];
+                            if (heights[u + v * 65] > maxHeight) maxHeight = heights[u + v * 65];
+                        }
+                    }
+                }
+            }
+        }
+
+        //normalise heights
+        for(int x = 0; x < terrainRes; x++) {
+            for (int y = 0; y < terrainRes; y++) {
+                fullHeights[x, y] = fullHeights[x, y] / maxHeight;
+            }
+        }
+
+        TerrainData terrainData = new TerrainData();
+        terrainData.heightmapResolution = terrainRes;
+        terrainData.size = new Vector3(terrainRes * 100 / 64, maxHeight, terrainRes * 100 / 64);
+        terrainData.SetHeights(0, 0, fullHeights);
+
+        Terrain terrain = new GameObject($"{worldID}_TERRAIN").AddComponent<Terrain>();
+        terrain.materialTemplate = rokmat;
+        terrain.terrainData = terrainData;
+        terrain.transform.position = new Vector3(0, 0, terrainRes * 100 / -64);
+    }
+
+    static float[] ReadTerrainHeights(string path) {
+        float[] heights = new float[65 * 65];
+        using (FileStream filestream = File.Open(path, FileMode.Open)) {
+            using (BinaryReader file = new BinaryReader(filestream)) {
+                file.ReadBytes(198);
+                for (int x = 0; x <= 64; x++) {
+                    file.ReadBytes(2);
+                    for (int y = 0; y <= 64; y++) {
+                        heights[x + y * 65] = file.ReadSingle();
+                    }
+                }
+            }
+        }
+        return heights;
+    }
+
     void LoadWater(uint worldID) {
         GameObject waterPrefab = Resources.Load<GameObject>("WaterPrefab"); 
-        Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
-        Def waterVolumes = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\6000000000000045_Uncompressed.EsoFileData", typeof(DefDataWaterVolume));
+        Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
+        Def waterVolumes = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000045_Uncompressed.EsoFileData", typeof(DefDataWaterVolume));
         for (int i = 0; i < tilemaps.rows.Length; i++) {
             DefDataWorldTileMap tilemap = (DefDataWorldTileMap)tilemaps.rows[i].data;
             if (tilemap.worldID != worldID || tilemap.type != 6 || tilemap.layers.Length == 0) continue;
@@ -131,13 +196,14 @@ public class EsoWorldEditorWindow : EditorWindow
 
         //unneccecary?
         
-        if (meshnames == null) {
+        //if (meshnames == null) {
             meshnames = new Dictionary<uint, string>();
-            foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\meshids.txt")) {
-                string[] words = line.Split(' ');
-                meshnames[UInt32.Parse(words[0])] = words[1];
+            foreach (string line in File.ReadAllLines(@"F:\Anna\Visual Studio\gr2obj\gr2obj\dedptsmodels.txt")) {
+                string[] words = line.Split('\t');
+                if (words.Length < 2) meshnames[UInt32.Parse(words[0])] = "null";
+                else meshnames[UInt32.Parse(words[0])] = words[1];
             }
-        }
+       //}
         
         Transform worldObj = new GameObject(worldID.ToString()).transform;
         Toc t = Toc.Read(paths[Util.WorldTocID(worldID)]);
