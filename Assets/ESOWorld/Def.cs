@@ -307,6 +307,11 @@ namespace ESOWorld {
         public uint loadingScreenID;
         public uint parentWorldID;
 
+        public float scaleX;
+        public float scaleY;
+        public int offsetX;
+        public int offsetY;
+
         public DefZone(BinaryReader r) {
             ReadHeader(r);
             r.Seek(8);
@@ -316,11 +321,61 @@ namespace ESOWorld {
             mapID = r.ReadUInt32B();
             pois = new uint[r.ReadUInt32B()];
             for (int i = 0; i < pois.Length; i++) pois[i] = r.ReadUInt32B();
+            r.Seek(r.ReadUInt32B() * 4);
             r.Seek(8);
-            r.Seek((int)r.ReadUInt32B() * 4);
+            r.Seek(r.ReadUInt32B() * 4);
             loadingScreenID = r.ReadUInt32B();
             r.Seek(4);
             parentWorldID = r.ReadUInt32B();
+            r.Seek(8);
+            scaleX = r.ReadSingle();
+            scaleY = r.ReadSingle();
+            offsetX = r.ReadInt32B() / 100;
+            offsetY = r.ReadInt32B() / 100;
+        }
+    }
+
+    public class DefWorld : DefData {
+        public uint width;
+        public uint height;
+
+        public DefWorld(BinaryReader r) {
+            ReadHeader(r);
+            width = r.ReadUInt32B();
+            height = r.ReadUInt32B();
+        }
+    }
+
+    public class DefMap : DefData {
+        public string path;
+        public uint tilesX;
+        public uint tilesY;
+        public uint tileRes;
+
+        public uint sizeX;
+        public uint sizeY;
+        public int offsetX;
+        public int offsetY;
+
+        public uint zoneID;
+        public uint parentMapID;
+
+        //public uint width;
+        //public uint height;
+
+        public DefMap(BinaryReader r) {
+            ReadHeader(r);
+            path = r.ReadStringC(true);
+            tilesX = r.ReadByte();
+            tilesY = r.ReadByte();
+            tileRes = r.ReadUInt16B();
+            sizeX = r.ReadUInt32B() / 100;
+            sizeY = r.ReadUInt32B() / 100;
+            offsetX = r.ReadInt32B() / 100;
+            offsetY = r.ReadInt32B() / 100;
+            zoneID = r.ReadUInt32B();
+            r.Seek(8);
+            parentMapID = r.ReadUInt32B();
         }
     }
 

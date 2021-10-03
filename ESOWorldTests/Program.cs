@@ -107,14 +107,31 @@ namespace ESOWorldTests {
             */
 
             /*
-            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\newlang\gamedata\lang\en.lang");
-            Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
-            Def worlds = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\600000000000003C_Uncompressed.EsoFileData");
-            for (int i = 0; i < zones.rows.Length; i++) { //zones.rows.Length
-                DefZone zone = (DefZone)zones.rows[i].data;
-                Console.WriteLine($"{zone.id}|{worlds.Get(zone.worldID).id}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}");
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang");
+            Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
+            Def worlds = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\600000000000003C_Uncompressed.EsoFileData", typeof(DefWorld));
+            Def maps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000048_Uncompressed.EsoFileData", typeof(DefMap));
+            
+            for (int i = 0; i < maps.rows.Length; i++) {
+                DefMap map =  (DefMap) maps.rows[i].data;
+                if (map.zoneID == 0) continue;
+                var zoneRow = zones.Get(map.zoneID);
+                if (zoneRow == null) continue;
+                DefZone zone = (DefZone)zoneRow.data;
+                DefWorld world = (DefWorld)worlds.Get(zone.worldID).data;
+
+                uint fullRes = map.tilesX * map.tileRes;
+                Console.WriteLine($"{l.GetName(zone.id, Lang.Entry.Zone)}|{world.width}|{world.height}|{(zone.offsetX - map.offsetX)*fullRes*2f/map.sizeX}|{(zone.offsetY - map.offsetY)*fullRes*2f/map.sizeY}|{fullRes*2*zone.scaleX/map.sizeX}|{fullRes*2*zone.scaleY/map.sizeY}");
             }
             */
+            
+            //for (int i = 0; i < zones.rows.Length; i++) { //zones.rows.Length
+            //    DefZone zone = (DefZone)zones.rows[i].data;
+            //    DefWorld world = (DefWorld)worlds.Get(zone.worldID).data;
+            //    Console.WriteLine($"{zone.id}|{world.id}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}|{world.width}|{world.height}|{zone.scaleX}|{zone.scaleY}|{zone.offsetX/100}|{zone.offsetY/100}");
+                //Console.WriteLine($"{zone.id}|{worlds.Get(zone.worldID).id}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}");
+            //}
+            
             //Console.WriteLine(Util.WorldCellFilename(43, 21, 6, 12));
             //var paths = Util.LoadWorldFiles();
             //HeightMontage(43, paths);
@@ -163,7 +180,7 @@ namespace ESOWorldTests {
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\database\", @"F:\Extracted\ESO\defnames\ic\");
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\database\", @"F:\Extracted\ESO\defnames\wf\");
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\000\", @"F:\Extracted\ESO\defnames\wfrelease\");
-            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts2\000\", @"F:\Extracted\ESO\defnames\dlpts2\");
+            DefGlobalExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts2\000\", @"F:\Extracted\ESO\defnames\dlpts2\g\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world\", @"F:\Extracted\ESO\y0toc\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\", @"F:\Extracted\ESO\bwtoc\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\world\", @"F:\Extracted\ESO\toc\ic\");
@@ -241,7 +258,7 @@ namespace ESOWorldTests {
             }
             */
 
-            
+            /*
             var paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\world");
             //@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world"
             //CopyCellFiles(426, paths);
@@ -252,7 +269,7 @@ namespace ESOWorldTests {
                     ExportTerrainCols(i, paths);
                 }
             }
-            
+            */
 
             //ExportTerrainCols(575, paths);
             /*
@@ -446,6 +463,23 @@ namespace ESOWorldTests {
                         w.WriteLine(d.rows[i].data.id + "\t" + d.rows[i].data.name);
                     }
                 }
+            }
+        }
+
+        static void DefGlobalExport(string folder, string outFolder) {
+
+            char[] replacechars = new char[] { ' ', '"' };
+
+            foreach (string path in Directory.EnumerateFiles(folder, "*.EsoFileData")) {
+                if (!Path.GetFileName(path).Contains("Uncompressed")) continue;
+
+                Def d = new Def(path);
+                if (d.rows.Length != 1) continue;
+
+                string filename = "Global_" + d.rows[0].data.name.Replace(' ', '_').Replace('"', '_') + "_" + Path.GetFileNameWithoutExtension(path);
+                Console.WriteLine(filename);
+
+                File.Copy(path, outFolder + filename + ".dat", true);
             }
         }
 

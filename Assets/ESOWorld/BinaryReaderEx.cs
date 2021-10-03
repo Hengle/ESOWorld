@@ -16,8 +16,8 @@ namespace ESOWorld {
             return val;
         }
 
-        public static string ReadStringC(this BinaryReader r) {
-            string s = new string(r.ReadChars(r.ReadUInt16()));
+        public static string ReadStringC(this BinaryReader r, bool b = false) {
+            string s = b ? new string(r.ReadChars(r.ReadUInt16B())) : new string(r.ReadChars(r.ReadUInt16()));
             r.ReadByte();
             return s;
         }
@@ -33,6 +33,11 @@ namespace ESOWorld {
         public static uint ReadUInt32B(this BinaryReader r) {
             byte[] b = r.ReadBytes(4);
             return (uint)(b[3] | (b[2] << 8) | (b[1] << 16) | (b[0] << 24));
+        }
+
+        public static int ReadInt32B(this BinaryReader r) {
+            byte[] b = r.ReadBytes(4);
+            return (int)(b[3] | (b[2] << 8) | (b[1] << 16) | (b[0] << 24));
         }
 
         public static ushort ReadUInt16B(this BinaryReader r) {

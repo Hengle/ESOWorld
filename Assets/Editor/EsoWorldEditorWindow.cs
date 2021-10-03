@@ -198,7 +198,7 @@ public class EsoWorldEditorWindow : EditorWindow
         
         //if (meshnames == null) {
             meshnames = new Dictionary<uint, string>();
-            foreach (string line in File.ReadAllLines(@"F:\Anna\Visual Studio\gr2obj\gr2obj\dedptsmodels.txt")) {
+            foreach (string line in File.ReadAllLines(@"F:\Anna\Visual Studio\gr2obj\gr2obj\dedptsmodelstrue.txt")) {
                 string[] words = line.Split('\t');
                 if (words.Length < 2) meshnames[UInt32.Parse(words[0])] = "null";
                 else meshnames[UInt32.Parse(words[0])] = words[1];
@@ -273,8 +273,13 @@ public class EsoWorldEditorWindow : EditorWindow
             o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? fixtures.fixtures[i].fixture.id.ToString() : $"{fixtures.fixtures[i].fixture.id}_UNK{fixtures.fixtures[i].model}";
             //o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? $"{meshnames[fixtures.fixtures[i].model]}_{fixtures.fixtures[i].id}" : $"UNKNOWN_{fixtures.fixtures[i].id}";
             foreach (var renderer in o.GetComponentsInChildren<MeshRenderer>()) {
-                if (renderer.gameObject.name.StartsWith("CLN_")) renderer.sharedMaterial = clnmat;
-                else if(renderer.gameObject.name.StartsWith("ROK_") || renderer.gameObject.name.StartsWith("PFX_ROK_") || renderer.gameObject.name.StartsWith("CAV_")) renderer.sharedMaterial = rokmat;
+                if (renderer.gameObject.name.StartsWith("CLN_")) {
+                    renderer.sharedMaterial = clnmat;
+                    o.SetActive(false);
+                } else if (renderer.gameObject.name.StartsWith("ROK_")
+                        || renderer.gameObject.name.StartsWith("PFX_ROK_")
+                        || (renderer.gameObject.name.StartsWith("CAV_") && !o.name.StartsWith("CAV_MIN")))
+                            renderer.sharedMaterial = rokmat;
                 else renderer.sharedMaterial = mat;
             }
         }
