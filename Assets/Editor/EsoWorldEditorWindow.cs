@@ -275,12 +275,15 @@ public class EsoWorldEditorWindow : EditorWindow
             foreach (var renderer in o.GetComponentsInChildren<MeshRenderer>()) {
                 if (renderer.gameObject.name.StartsWith("CLN_")) {
                     renderer.sharedMaterial = clnmat;
-                    o.SetActive(false);
+                    for (int child = 0; child < renderer.transform.childCount; child++) renderer.transform.GetChild(child).gameObject.SetActive(false);
                 } else if (renderer.gameObject.name.StartsWith("ROK_")
                         || renderer.gameObject.name.StartsWith("PFX_ROK_")
                         || (renderer.gameObject.name.StartsWith("CAV_") && !o.name.StartsWith("CAV_MIN")))
-                            renderer.sharedMaterial = rokmat;
-                else renderer.sharedMaterial = mat;
+                    renderer.sharedMaterial = rokmat;
+                else {
+                    renderer.sharedMaterial = mat;
+                    if (renderer.gameObject.name.StartsWith("PFX_")) for (int child = 0; child < renderer.transform.childCount; child++) renderer.transform.GetChild(child).gameObject.SetActive(false);
+                }
             }
         }
     }

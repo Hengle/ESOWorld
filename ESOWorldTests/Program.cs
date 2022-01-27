@@ -13,8 +13,42 @@ namespace ESOWorldTests {
         }
 
         static void Main(string[] args) {
-            //Console.WriteLine(Util.WorldFileDesc(UInt64.Parse("400092E00003000A", System.Globalization.NumberStyles.HexNumber)));
-            //FixtureSizeMap(1207, 32);
+
+            //DefIdCheck();
+
+            /*
+            foreach(var file in Directory.EnumerateFiles(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\foadata\000", "*.EsoIdData")) {
+                DefIndexFile indexFile = DefIndexFile.Read(file);
+                Console.WriteLine(Path.GetFileNameWithoutExtension(file) + "\t" + indexFile);
+            }
+            Console.WriteLine();
+
+            foreach (var file in Directory.EnumerateFiles(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlnewlife\000", "*.EsoIdData")) {
+                DefIndexFile indexFile = DefIndexFile.Read(file);
+                Console.WriteLine(Path.GetFileNameWithoutExtension(file) + "\t" + indexFile);
+            }
+            */
+
+            //foreach(var file in Directory.EnumerateFiles(@"F:\Extracted\ESO\defnames\dlnewlife")) {
+            //    string[] lines = File.ReadAllLines(file);
+            //    if(lines.Length != 0)
+            //    Console.WriteLine($"{Path.GetFileNameWithoutExtension(file)}\t{lines[lines.Length-1]}");
+            //}
+
+
+            Lang a = new Lang(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlnewlife\gamedata\lang\en.lang");
+            //Lang b = new Lang(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts2\gamedata\lang\en.lang");
+            //Lang.Compare(a, b, "comptest2.txt");
+
+            a.ToCsv(@"F:\Extracted\ESO\dllang.csv");
+
+
+            //Lang b = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlr2\gamedata\lang\en.lang");
+            //Lang.Compare(a, b);
+
+            //ListUnusedZosft(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dl2m.txt", @"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\zosft.txt");
+            //CreateHiddenWorldspaceList(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlrelease2.txt", @"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlhiddenworldspacenew.txt");
+            //FixtureSizeMap(1233, 32, @"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlhiddenworldspacenew.txt", true);
             //FixtureSizeMap(31, 20);
 
             /*
@@ -124,14 +158,14 @@ namespace ESOWorldTests {
                 Console.WriteLine($"{l.GetName(zone.id, Lang.Entry.Zone)}|{world.width}|{world.height}|{(zone.offsetX - map.offsetX)*fullRes*2f/map.sizeX}|{(zone.offsetY - map.offsetY)*fullRes*2f/map.sizeY}|{fullRes*2*zone.scaleX/map.sizeX}|{fullRes*2*zone.scaleY/map.sizeY}");
             }
             */
-            
+
             //for (int i = 0; i < zones.rows.Length; i++) { //zones.rows.Length
             //    DefZone zone = (DefZone)zones.rows[i].data;
             //    DefWorld world = (DefWorld)worlds.Get(zone.worldID).data;
             //    Console.WriteLine($"{zone.id}|{world.id}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}|{world.width}|{world.height}|{zone.scaleX}|{zone.scaleY}|{zone.offsetX/100}|{zone.offsetY/100}");
-                //Console.WriteLine($"{zone.id}|{worlds.Get(zone.worldID).id}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}");
+            //Console.WriteLine($"{zone.id}|{worlds.Get(zone.worldID).id}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}");
             //}
-            
+
             //Console.WriteLine(Util.WorldCellFilename(43, 21, 6, 12));
             //var paths = Util.LoadWorldFiles();
             //HeightMontage(43, paths);
@@ -180,7 +214,8 @@ namespace ESOWorldTests {
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\database\", @"F:\Extracted\ESO\defnames\ic\");
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\database\", @"F:\Extracted\ESO\defnames\wf\");
             //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\000\", @"F:\Extracted\ESO\defnames\wfrelease\");
-            DefGlobalExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts2\000\", @"F:\Extracted\ESO\defnames\dlpts2\g\");
+            //DefRowNameExport(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlnewlife\000\", @"F:\Extracted\ESO\defnames\dlnewlife\");
+            //DefRowNameExport(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\foadata\000", @"F:\Extracted\ESO\defnames\foadata\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world\", @"F:\Extracted\ESO\y0toc\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\", @"F:\Extracted\ESO\bwtoc\");
             //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\world\", @"F:\Extracted\ESO\toc\ic\");
@@ -206,15 +241,87 @@ namespace ESOWorldTests {
             */
 
             //Console.WriteLine( Util.WorldCellFilename(494, 21, 9, 9));
+
+
+            /*            
+            Dictionary<uint, List<string>> book2bookcaselookup = new Dictionary<uint, List<string>>();
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang");
+            Def clickables = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\60000000000000b0_Uncompressed.EsoFileData", typeof(DefClickable));
+            for (int i = 0; i < clickables.rows.Length; i++) {
+                DefClickable clickable = (DefClickable)clickables.rows[i].data;
+                if (clickable.books.Length < 2) continue;
+                //Console.Write(clickable.name + "|");
+                //Array.Sort(clickable.books);
+                for(int j = 0; j < clickable.books.Length; j++) {
+                    //Console.Write(l.GetName(clickable.books[j], Lang.Entry.BookTitle) + "|");
+
+                    if (!book2bookcaselookup.ContainsKey(clickable.books[j])) book2bookcaselookup[clickable.books[j]] = new List<string>();
+
+                    string shortName = clickable.name.Substring(0, clickable.name.Length - 2);
+                    for (int k = 0; k < book2bookcaselookup[clickable.books[j]].Count; k++)
+                        if (book2bookcaselookup[clickable.books[j]][k].StartsWith(shortName))
+                            goto End;
+					
+                    book2bookcaselookup[clickable.books[j]].Add(clickable.name);
+                    End:;
+				}
+                //Console.WriteLine();
+            }
+            
+           
+
+            foreach (uint bookId in book2bookcaselookup.Keys) {
+                Console.Write($"{bookId}|{l.GetName(bookId, Lang.Entry.BookTitle)}|");
+                //foreach (string clickable in book2bookcaselookup[bookId]) Console.Write(clickable + "|");
+                Console.WriteLine();
+			}
+            */
+
             /*
-            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\gamedata\lang\en.lang");
-            Def books = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\000\6000000000000097_Uncompressed.EsoFileData", typeof(DefBook));
+            
+            HashSet<string> bgsbooks = new HashSet<string>(File.ReadAllLines(@"E:\Anna\Desktop\bgsbooks2.txt"));
+            HashSet<string> mwbooks = new HashSet<string>(File.ReadAllLines(@"E:\Anna\Desktop\uespbook\tes3.txt"));
+            HashSet<string> obbooks = new HashSet<string>(File.ReadAllLines(@"E:\Anna\Desktop\uespbook\tes4.txt"));
+            HashSet<string> skbooks = new HashSet<string>(File.ReadAllLines(@"E:\Anna\Desktop\uespbook\tes5.txt"));
+
+            //foreach (string line in File.ReadAllLines(@"E:\Anna\Desktop\bgsbooks2.txt")) bgsbooks.Add(line);
+            HashSet<string> esoBooks = new HashSet<string>(File.ReadAllLines(@"E:\Anna\Desktop\esoextra.txt"));
+            HashSet<string> esoOOGBooks = new HashSet<string>(File.ReadAllLines(@"E:\Anna\Desktop\esooog.txt"));
+
+            HashSet<string> esoLorespace = new HashSet<string>(File.ReadAllLines(@"E:\Anna\Desktop\uespbook\esolorespace.txt"));
+
+            var zosft = ReadZosft();
+            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlnewlife\gamedata\lang\en.lang");
+            Def books = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlnewlife\000\6000000000000097_Uncompressed.EsoFileData", typeof(DefBook));
             for (int i = 0; i < books.rows.Length; i++) {
                 DefBook book = (DefBook)books.rows[i].data;
-                if(!l.GetName(book.id, Lang.Entry.BookTitle).StartsWith("Crafting Motif"))
-                Console.WriteLine($"{book.id}|{l.GetName(book.id, Lang.Entry.BookTitle)}|{book.name}|{book.updateTag}|{l.GetName(book.collectionID, Lang.Entry.BookCollection)}");
+                esoBooks.Add(l.GetName(book.id, Lang.Entry.BookTitle));
+                //continue;
+                //if (!l.GetName(book.id, Lang.Entry.BookTitle).StartsWith("Crafting Motif")) {
+                string icon = zosft.ContainsKey(book.iconAsset) ? zosft[book.iconAsset] : "UNK";
+                string title = l.GetName(book.id, Lang.Entry.BookTitle);
+                string lorespace = esoLorespace.Contains(title) ? "Y" : "N";
+                if (lorespace == "Y") esoLorespace.Remove(title);
+                Console.WriteLine($"{lorespace}|{book.id}|{book.monsterID}|{book.fontOrBackground}|{icon}|{book.isLorebook}|{book.hideTitle}|{title}|{book.name}|{book.updateTag}|{l.GetName(book.collectionID, Lang.Entry.BookCollection)}");
+
+                //}
+            }
+            foreach (string title in esoLorespace) Console.WriteLine($"Y||||||{title}");
+            */
+
+            /*
+            foreach(string line in File.ReadAllLines(@"E:\Anna\Desktop\books2.txt")) {
+                string prefix = "0NK";
+                if (bgsbooks.Contains(line)) prefix = "2DF";
+                else if (mwbooks.Contains(line)) prefix = "3MW";
+                else if (obbooks.Contains(line)) prefix = "4OB";
+                else if (skbooks.Contains(line)) prefix = "5SK";
+                else if (esoBooks.Contains(line)) prefix = "6ON";
+                else if (esoOOGBooks.Contains(line)) prefix = "7WB";
+                Console.WriteLine($"{prefix}|{line}");
             }
             */
+
             /*
             Def worlds = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\600000000000003C_Uncompressed.EsoFileData");
             foreach(string path in Directory.EnumerateFiles(@"F:\Extracted\ESO\y0toc")) {
@@ -280,16 +387,122 @@ namespace ESOWorldTests {
             }
             */
 
+            //CreateZoneMap(@"F:\Extracted\ESO\screenshots\wslight.png", @"F:\Extracted\ESO\screenshots\wsmask.png", "", "testskr.tga");
+
+
+
+
+
         }
 
-        static void FixtureSizeMap (uint id, int size, string name = "") {
+
+        static void CreateHiddenWorldspaceList(string mnfdump, string output) {
+            using(TextWriter writer = new StreamWriter(File.Create(output))) {
+                foreach (string line in File.ReadAllLines(mnfdump)) {
+                    if (line.Contains("hiddenWorldspace")) {
+                        string[] words = line.Split('\t');
+                        writer.WriteLine($"{Util.WorldFileDesc(ulong.Parse(words[0], System.Globalization.NumberStyles.HexNumber))}|{words[2]}");
+					}
+                }
+            }
+
+		}
+
+        static void CreateZoneMap(string lightingPath, string maskPath, string lodPath, string outName, float scaleX = 1, float scaleY = 1, int offsetX = 0, int offsetY = 0) {
+
+            
+            MagickColor colorWater = MagickColor.FromRgb(47, 50, 56);
+
+
+
+            MagickImage mask = new MagickImage(maskPath);
+            int imageWidth = mask.Width; int imageHeight = mask.Height;
+            //mask.FilterType = FilterType.Triangle;
+            //mask.Resize(imageWidth, imageHeight);
+            MagickImageCollection masks = new MagickImageCollection(mask.Separate(Channels.RGB));
+
+
+
+            MagickImage lighting = new MagickImage(lightingPath);
+            //lighting.FilterType = FilterType.Triangle;
+            //lighting.Resize(imageWidth, imageHeight);
+
+
+
+
+            Console.WriteLine("loaded images...");
+
+            //lighting.Level(20, 255);
+            MagickImage finalImage = new MagickImage(MagickColors.MediumSpringGreen, imageWidth, imageHeight);
+           
+            MagickImage water = new MagickImage(colorWater, imageWidth, imageHeight);
+            water.Composite(masks[2], CompositeOperator.CopyAlpha);
+            Console.WriteLine("water...");
+
+
+            MagickImage buildings = new MagickImage(MagickColors.White, imageWidth, imageHeight);
+            buildings.Composite(masks[0], CompositeOperator.CopyAlpha);
+
+            MagickImage shadows = new MagickImage(MagickColors.Black, imageWidth, imageHeight);
+            shadows.Composite(masks[0], CompositeOperator.CopyAlpha);
+            Console.WriteLine("blurring...");
+            shadows.Blur(0, 4.5, Channels.Alpha);
+
+            Console.WriteLine("buildings...");
+
+
+            finalImage.Composite(water, CompositeOperator.Over);
+            finalImage.Composite(shadows, CompositeOperator.Over);
+            //finalImage.Composite(shadows, CompositeOperator.Over);
+            finalImage.Composite(buildings, CompositeOperator.Over);
+
+            finalImage.Composite(lighting, CompositeOperator.Multiply);
+
+
+            Console.WriteLine("saving...");
+            finalImage.Write(outName);
+            Console.WriteLine("done.");
+
+
+        }
+
+        static void ListUnusedZosft(string mnfdump, string zosftdump) {
+            Dictionary<ulong, byte> mnf = new Dictionary<ulong, byte>();
+            foreach (string line in File.ReadAllLines(mnfdump)) {
+                string[] words = line.Split('\t');
+                if (words[0].Length > 13) continue;
+                mnf[ulong.Parse(words[0])] = byte.Parse(words[1]);
+			}
+
+            foreach (string line in File.ReadAllLines(zosftdump)) {
+                string[] words = line.Split('|');
+                ulong id = ulong.Parse(words[0], System.Globalization.NumberStyles.HexNumber);
+                if (!mnf.ContainsKey(id)) Console.WriteLine("MISSING " + words[1]);
+                else if (mnf[id] > 237) Console.WriteLine($"HIDDEN {words[1]} {mnf[id]}");
+            }
+		}
+
+        static Dictionary<uint, string> ReadZosft(string path = @"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\zosftdl.txt") {
+            Dictionary<uint, string> paths = new Dictionary<uint, string>();
+            foreach (string line in File.ReadAllLines(path)) {
+                string[] words = line.Split('|');
+                if (words.Length != 2) {
+                    Console.WriteLine($"NOT 2 WORDS {line}");
+                    continue;
+                }
+                paths[UInt32.Parse(words[0], System.Globalization.NumberStyles.HexNumber)] = words[1];
+            }
+            return paths;
+        }
+        static void FixtureSizeMap (uint id, int size, string path, bool grass = false, string name = "") {
 
             int[] sizes = new int[size * size];
 
             int max = 0;
-            foreach (string line in File.ReadAllLines(@"F:\Anna\Files\Unity\esoworldedit\ESOWorldTests\bin\Debug\hiddenworld.txt")) {
-                if (!line.StartsWith($"{id}_grass_")) continue;
-                int fileSize = int.Parse(line.Split('|')[1]) - 20;
+            foreach (string line in File.ReadAllLines(path)) {
+                if (!grass && !line.StartsWith($"{id}_fixtures_")) continue;
+                if (grass && !line.StartsWith($"{id}_grass_")) continue;
+                int fileSize = int.Parse(line.Split('|')[1]);
                 int x = int.Parse(line.Split('_')[2]);
                 int y = int.Parse(line.Split('_', '.')[3]);
                 sizes[x + size * y] = fileSize;
@@ -303,7 +516,7 @@ namespace ESOWorldTests {
 
             MagickReadSettings settings = new MagickReadSettings() { Width = size, Height = size, Format = MagickFormat.Gray, Depth = 8 };
             MagickImage image = new MagickImage(data, settings);
-            if (name == "") name = id.ToString();
+            if (name == "") name = grass ? id.ToString() + "_grass" : id.ToString() + "_fixtures";
             image.Write($"{name}.png");
         }
         static void ExportZoneLoadscreens() {
@@ -444,10 +657,11 @@ namespace ESOWorldTests {
         }
 
         static void DefRowNameExport(string folder, string outFolder) {
+            if (!Directory.Exists(outFolder)) Directory.CreateDirectory(outFolder);
             Dictionary<uint, string> defmanes = new Dictionary<uint, string>();
-            foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\deftypes.txt")) {
+            foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\deftypesdl.txt")) {
                 Console.WriteLine(line.Split('\t')[0]);
-                defmanes[UInt32.Parse(line.Split('\t')[1], System.Globalization.NumberStyles.HexNumber)] = line.Split('\t')[0];
+                defmanes[UInt32.Parse(line.Split(' ')[0])] = line.Split(' ')[1];
             }
 
             foreach (string path in Directory.EnumerateFiles(folder, "*.EsoFileData")) {
@@ -464,6 +678,68 @@ namespace ESOWorldTests {
                     }
                 }
             }
+        }
+
+        static void DefIdCheck(int searchDepth = 100) {
+
+            Dictionary<uint, Dictionary<uint, string>> defRowNames = new Dictionary<uint, Dictionary<uint, string>>();
+
+            //if (!Directory.Exists(outFolder)) Directory.CreateDirectory(outFolder);
+            Dictionary<uint, string> defNames = new Dictionary<uint, string>();
+            foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\deftypes.txt")) {
+                Console.WriteLine(line.Split('\t')[0]);
+                defNames[UInt32.Parse(line.Split('\t')[1], System.Globalization.NumberStyles.HexNumber)] = line.Split('\t')[0];
+            }
+
+            foreach (string path in Directory.EnumerateFiles(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlnewlife\000", "*_Uncompressed.EsoFileData")) {
+                ulong id = UInt64.Parse(Path.GetFileName(path).Split('_')[0], System.Globalization.NumberStyles.HexNumber);
+                uint shortID = (uint)(id & uint.MaxValue);
+                Console.WriteLine(shortID);
+                //string filename = defmanes.ContainsKey(shortID) ? defmanes[shortID] + "_" + Path.GetFileNameWithoutExtension(path) : Path.GetFileNameWithoutExtension(path);
+                //Console.WriteLine(filename);
+                Def d = new Def(path);
+                defRowNames[shortID] = new Dictionary<uint, string>();
+                for (int i = 0; i < Math.Min(d.rows.Length, searchDepth + 20); i++) {
+                    defRowNames[shortID][d.rows[i].data.id] = d.rows[i].data.name;
+                }
+            }
+            Console.WriteLine("Done");
+
+            HashSet<uint> newDefIdsRemaining = new HashSet<uint>();
+            foreach (uint id in defRowNames.Keys) newDefIdsRemaining.Add(id);
+
+            foreach(string path in Directory.EnumerateFiles(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\foadata\000", "*_Uncompressed.EsoFileData")) {
+                ulong id = UInt64.Parse(Path.GetFileName(path).Split('_')[0], System.Globalization.NumberStyles.HexNumber);
+                uint shortID = (uint)(id & uint.MaxValue);
+
+                Def def = new Def(path);
+
+                int maxScore = 0;
+                uint bestFit = uint.MaxValue;
+
+                foreach (uint key in newDefIdsRemaining) {
+                    int score = 0;
+                    for(int i = 0; i < Math.Min(def.rows.Length, searchDepth); i++) {
+                        if (defRowNames[key].ContainsKey(def.rows[i].data.id) && defRowNames[key][def.rows[i].data.id] == def.rows[i].data.name) score++; 
+                    }
+                    //Console.WriteLine($"{key} {score}");
+                    if(score > maxScore && (score * 2) > Math.Min(def.rows.Length, searchDepth)) {
+                        maxScore = score;
+                        bestFit = key;
+                    }
+                }
+                if(bestFit != uint.MaxValue) {
+                    Console.WriteLine($"{bestFit} {shortID} " + (defNames.ContainsKey(shortID) ? defNames[shortID] : "unk"));
+                    newDefIdsRemaining.Remove(bestFit);
+                } else {
+                    Console.WriteLine($"noMatch {shortID} " + (defNames.ContainsKey(shortID) ? defNames[shortID] : "unk"));
+                }
+                
+
+                //break;
+            }
+
+            foreach (var id in newDefIdsRemaining) Console.WriteLine($"{id} noMatch unknown");
         }
 
         static void DefGlobalExport(string folder, string outFolder) {
@@ -512,7 +788,7 @@ namespace ESOWorldTests {
                 for(int i = 0; i < pois.rows.Length; i++) {
                     var poi = (DefPointOfInterest)pois.rows[i].data;
                     uint id = poi.id;
-                    w.WriteLine($"{id}\t{poi.type}\t{poi.name}\t{l.GetName(id, Lang.Entry.PointOfInterest)}\t{l.GetName(id, Lang.Entry.ObjectiveText)}\t{l.GetName(id, Lang.Entry.ObjectiveCompleteText)}");
+                    w.WriteLine($"{id}\t{poi.type}\t{poi.name}\t{l.GetName(id, Lang.Entry.PointOfInterest)}\t{l.GetName(id, Lang.Entry.Objective_Text)}\t{l.GetName(id, Lang.Entry.Objective_CompleteText)}");
                     //if (objectiveText.ContainsKey(id) && objectiveCompleteText.ContainsKey(id)) {
                     //    w.WriteLine($"{id}\t{poi.type}\t{poiNames[id]}\t{objectiveText[id]}\t{objectiveCompleteText[id]}");
                     //}
@@ -689,4 +965,33 @@ namespace ESOWorldTests {
         }
 
     }
+
+    /*SHOULDNT NEED THESE ANYMORE
+            
+            MagickReadSettings readSettings = new MagickReadSettings() { ColorSpace = ColorSpace.RGB };
+            MagickImage testImage = new MagickImage(@"E:\Anna\Desktop\test.png", readSettings);
+
+            MagickImageCollection images = new MagickImageCollection();
+            MagickImage referenceImage = new MagickImage(@"E:\Anna\Desktop\test2.png");
+            referenceImage.Draw(new Drawables().FillColor(MagickColors.Black).Gravity(Gravity.Northwest).FontPointSize(16).Text(2, 2, "GIMP Cubic"));
+            images.Add(referenceImage);
+            for (int i = 2; i < 31; i++) {
+                FilterType filter = (FilterType)i;
+
+                MagickImage test = new MagickImage(testImage);
+                test.FilterType = filter;
+                test.Resize(256, 256);
+                test.Draw(new Drawables().FillColor(MagickColors.Black).Gravity(Gravity.Northwest).FontPointSize(16).Text(2, 2, filter.ToString())) ;
+                Console.WriteLine(filter.ToString());
+                images.Add(test);
+                //MagickImageCollection magickImages = new MagickImageCollection(test.Separate(Channels.Red));
+
+
+                //test.Write("filter/" + filter.ToString() + ".png");
+			}
+            var montage = images.Montage(new MontageSettings() { Geometry = new MagickGeometry(256) });
+            montage.Write("filters.png");
+            
+
+     */
 }

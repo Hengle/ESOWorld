@@ -190,15 +190,33 @@ namespace ESOWorld {
     }
 
     public class DefBook : DefData {
+        public uint monsterID;
+        public uint fontOrBackground;
         public uint collectionID;
+        public uint iconAsset;
+        public uint isLorebook;
+        public byte hideTitle;
 
         public DefBook(BinaryReader r) {
             ReadHeader(r);
             r.Seek(r.ReadUInt32B() * 8);
-            r.Seek(8);
+            monsterID = r.ReadUInt32B();
+            fontOrBackground = r.ReadUInt32B();
             collectionID = r.ReadUInt32B();
+            iconAsset = r.ReadUInt32B();
+            isLorebook = r.ReadUInt32B();
+            hideTitle = r.ReadByte();
 		}
 	}
+
+    public class DefClickable : DefData {
+        public uint[] books;
+
+        public DefClickable(BinaryReader r) {
+            ReadHeader(r);
+            books = r.ReadUInt32ArrayB();
+        }
+    }
     public class DefSet : DefData {
         public struct Stat {
             public uint requiredItems;

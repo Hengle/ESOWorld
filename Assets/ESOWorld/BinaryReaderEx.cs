@@ -45,7 +45,12 @@ namespace ESOWorld {
             return (ushort)(b[1] | (b[0] << 8));
         }
 
-        public static string ReadStringNullTerminated(this BinaryReader r) {
+        public static short ReadInt16B(this BinaryReader r) {
+            byte[] b = r.ReadBytes(2);
+            return (short)(b[1] | (b[0] << 8));
+        }
+
+        public static string ReadStringNullTerminated(this BinaryReader r, int capacity=32) {
             List<char> bytes = new List<char>();
             while (r.PeekChar() != 0x00) bytes.Add(r.ReadChar());
             return new string(bytes.ToArray());
