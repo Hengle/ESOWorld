@@ -54,14 +54,25 @@ public class EsoWorldEditEditor : Editor
 
         GUILayout.Label(worldName);
 
-        if (GUILayout.Button("import meshes")) {
+        if (GUILayout.Button("Import Meshes")) {
             e.ImportMeshes();
         }
-        
+
+        if (GUILayout.Button("Import Terrain")) {
+            e.ImportTerrain();
+        }
+
+        if (GUILayout.Button("Import Fixtures")) {
+            e.LoadFixtures();
+        }
+
+        if (GUILayout.Button("Import Water")) {
+            e.ImportWater();
+        }
 
         serializedObject.ApplyModifiedProperties();
 
         EditorGUIUtility.labelWidth = defaultLabelWidth;
-        DrawDefaultInspector();
+        //DrawDefaultInspector();
     }
 }

@@ -29,10 +29,7 @@ public class EsoWorldEdit : MonoBehaviour
 
     public Dictionary<uint, string> worldNames;
 
-    GameObject fixturePrefab;
-    Material mat;
-    Material rokmat;
-    Material clnmat;
+
 
     //[MenuItem("Window/ESOWorld")]
     //static void Init() {
@@ -88,6 +85,8 @@ public class EsoWorldEdit : MonoBehaviour
         }
     }
 
+    public void ImportTerrain() { LoadTerrain(worldID); }
+
     void LoadTerrain(uint worldID) {
         Toc t = Toc.Read(paths[Util.WorldTocID(worldID)]);
         Layer l = t.layers[1];
@@ -129,7 +128,7 @@ public class EsoWorldEdit : MonoBehaviour
         terrainData.SetHeights(0, 0, fullHeights);
 
         Terrain terrain = new GameObject($"{worldID}_TERRAIN").AddComponent<Terrain>();
-        terrain.materialTemplate = rokmat;
+        terrain.materialTemplate = Resources.Load<Material>("ROKMat");
         terrain.terrainData = terrainData;
         terrain.transform.position = new Vector3(0, 0, terrainRes * 100 / -64);
     }
@@ -150,10 +149,11 @@ public class EsoWorldEdit : MonoBehaviour
         return heights;
     }
 
+    public void ImportWater() { LoadWater(worldID); }
     void LoadWater(uint worldID) {
         GameObject waterPrefab = Resources.Load<GameObject>("WaterPrefab"); 
-        Def tilemaps = new Def(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
-        Def waterVolumes = new Def(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000045_Uncompressed.EsoFileData", typeof(DefDataWaterVolume));
+        Def tilemaps = new Def(Path.Combine(databasePath, "6000000000000044_Uncompressed.EsoFileData"), typeof(DefDataWorldTileMap));
+        Def waterVolumes = new Def(Path.Combine(databasePath, "6000000000000045_Uncompressed.EsoFileData"), typeof(DefDataWaterVolume));
         for (int i = 0; i < tilemaps.rows.Length; i++) {
             DefDataWorldTileMap tilemap = (DefDataWorldTileMap)tilemaps.rows[i].data;
             if (tilemap.worldID != worldID || tilemap.type != 6 || tilemap.layers.Length == 0) continue;
@@ -217,17 +217,16 @@ public class EsoWorldEdit : MonoBehaviour
         for (int i = 0; i < node.nodes.Length; i++) CreateTree(node.nodes[i], nodeObj);
     }
 
+    public void LoadFixtures() { LoadFixtures(worldID); }
+
     void LoadFixtures(uint worldID) {
         //if(paths == null || paths.Count < 100) paths = Util.LoadWorldFiles();
-        fixturePrefab = Resources.Load<GameObject>("FixturePrefab");
-        mat = Resources.Load<Material>("FixtureMat");
-        clnmat = Resources.Load<Material>("CLNMat");
 
         //unneccecary?
-        
+
         //if (meshnames == null) {
-            meshnames = new Dictionary<uint, string>();
-            foreach (string line in File.ReadAllLines(@"F:\Anna\Visual Studio\gr2obj\gr2obj\dedptsmodelstrue.txt")) {
+        meshnames = new Dictionary<uint, string>();
+            foreach (string line in File.ReadAllLines(@"E:\Anna\Anna\Visual Studio\gr2obj\gr2obj\models.txt")) {
                 string[] words = line.Split('\t');
                 if (words.Length < 2) meshnames[UInt32.Parse(words[0])] = "null";
                 else meshnames[UInt32.Parse(words[0])] = words[1];
@@ -247,22 +246,23 @@ public class EsoWorldEdit : MonoBehaviour
                     cell.SetParent(worldObj, true);
                     ImportFixtures(fixtures, cell);
                 } else
-                    Debug.Log("MISSING FIXTURE FILE");
+                    Debug.Log($"MISSING FIXTURE FILE {Util.WorldCellID(worldID, 21, x, y)}");
             }
         }
     }
 
     //delete later
+    /*
     void LoadPersistentFixtures(uint worldID) {
 
 
         if (paths == null || paths.Count < 100) paths = Util.LoadWorldFiles();
         fixturePrefab = Resources.Load<GameObject>("FixturePrefab");
-        mat = Resources.Load<Material>("FixtureMat");
-        clnmat = Resources.Load<Material>("CLNMat");
+        //mat = Resources.Load<Material>("FixtureMat");
+        //clnmat = Resources.Load<Material>("CLNMat");
 
         //unneccecary?
-        /*
+        
         if (meshnames == null) {
             meshnames = new Dictionary<uint, string>();
             foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\meshids.txt")) {
@@ -270,7 +270,7 @@ public class EsoWorldEdit : MonoBehaviour
                 meshnames[UInt32.Parse(words[0])] = words[1];
             }
         }
-        */
+        
 
         if(paths.ContainsKey(Util.WorldFileID(worldID, 1))) {
             FixtureFile fixtures = FixtureFile.Open(paths[Util.WorldFileID(worldID, 1)]);
@@ -284,8 +284,15 @@ public class EsoWorldEdit : MonoBehaviour
             ImportFixtures(fixtures, cell, false);
         }
     }
+        */
 
     void ImportFixtures(FixtureFile fixtures, Transform cell, bool ignoreVeg = true) {
+
+        GameObject fixturePrefab = Resources.Load<GameObject>("FixturePrefab");
+        Material mat = Resources.Load<Material>("FixtureMat");
+        Material clnmat = Resources.Load<Material>("CLNMat");
+        Material rokmat = Resources.Load<Material>("ROKMat");
+
         for (int i = 0; i < fixtures.fixtures.Length; i++) {
             if (meshnames.ContainsKey(fixtures.fixtures[i].model) && ignoreVeg) {
                 if (meshnames[fixtures.fixtures[i].model].StartsWith("VEG_") || meshnames[fixtures.fixtures[i].model].StartsWith("TRE_")) continue;
