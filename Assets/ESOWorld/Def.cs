@@ -88,6 +88,7 @@ namespace ESOWorld {
 
     public abstract class DefData {
         protected const int HEADER_SIZE_WITHOUT_NAME = 25;
+        
 
         public uint id;
         public string name;
@@ -172,6 +173,7 @@ namespace ESOWorld {
             ReadHeader(r);
             type = r.ReadUInt32B();
         }
+
     }
 
     public class DefItemPartMaterial : DefData {
@@ -187,6 +189,7 @@ namespace ESOWorld {
             id3 = r.ReadUInt32B();
             id4 = r.ReadUInt32B();
         }
+
     }
 
     public class DefBook : DefData {
@@ -207,7 +210,8 @@ namespace ESOWorld {
             isLorebook = r.ReadUInt32B();
             hideTitle = r.ReadByte();
 		}
-	}
+
+    }
 
     public class DefClickable : DefData {
         public uint[] books;
@@ -216,6 +220,7 @@ namespace ESOWorld {
             ReadHeader(r);
             books = r.ReadUInt32ArrayB();
         }
+
     }
     public class DefSet : DefData {
         public struct Stat {
@@ -315,9 +320,13 @@ namespace ESOWorld {
             }
             return value.ToString();
 		}
+
     }
 
     public class DefZone : DefData {
+
+        
+
         public float[] color;
         public uint worldID;
         public uint mapID;
@@ -329,6 +338,8 @@ namespace ESOWorld {
         public float scaleY;
         public int offsetX;
         public int offsetY;
+
+
 
         public DefZone(BinaryReader r) {
             ReadHeader(r);
@@ -351,6 +362,7 @@ namespace ESOWorld {
             offsetX = r.ReadInt32B() / 100;
             offsetY = r.ReadInt32B() / 100;
         }
+
     }
 
     public class DefWorld : DefData {
@@ -395,6 +407,7 @@ namespace ESOWorld {
             r.Seek(8);
             parentMapID = r.ReadUInt32B();
         }
+
     }
 
     public class DefQuest : DefData {
@@ -488,5 +501,6 @@ namespace ESOWorld {
             r.Seek(8);
             companionID = r.ReadUInt32B();
         }
+
     }
 }

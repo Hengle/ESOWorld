@@ -172,7 +172,7 @@ namespace ESOWorld {
             SystemMail_Title = 191189508,
             SystemMail_Sender = 33425332,
 
-            ChapterDescription = 226966585, //181
+            ChapterUpgrade_Description = 226966585, //181
 
             Collectible = 18173141,
             Collectible_Subheader = 96069573,
@@ -194,7 +194,7 @@ namespace ESOWorld {
             HeraldryCategory = 59621621,
             
 
-            Achievement = 172030117,
+            Achievement_Label = 172030117,
             Achievement_Description = 188155806,
             Achievement_Title = 12529189,
             AchievementCategory = 115337253,
@@ -398,6 +398,10 @@ namespace ESOWorld {
 
 
         }
+
+        public static Dictionary<string, Entry[]> defLangEntries = new Dictionary<string, Entry[]> {
+            {"ZoneDef", new Entry[] { Entry.Zone, Entry.Zone_LoadScreenText, Entry.Zone_LoadScreenText2 } }
+        };
 
 
         long textOffset;

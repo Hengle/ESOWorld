@@ -14,6 +14,9 @@ namespace ESOWorldTests {
 
         static void Main(string[] args) {
 
+            //CreateZoneMap(@"F:\Extracted\ESO\screenshots\screenshot_220129_224108.png", @"F:\Extracted\ESO\screenshots\screenshot_220129_224142.png", "", "goldcoast_base.png");
+            //DefRowNameExport(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\atpts\000", @"F:\Extracted\ESO\defnames\atpts\");
+
             //DefIdCheck();
 
             /*
@@ -36,11 +39,12 @@ namespace ESOWorldTests {
             //}
 
 
-            Lang a = new Lang(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlnewlife\gamedata\lang\en.lang");
-            //Lang b = new Lang(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts2\gamedata\lang\en.lang");
-            //Lang.Compare(a, b, "comptest2.txt");
+            Lang a = new Lang(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\atpts\gamedata\lang\en.lang");
+            //DefRowNameExport(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\hiannounce\000\", @"F:\Extracted\ESO\defnames\hiannounce\");
+            Lang b = new Lang(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\hiannounce\gamedata\lang\en.lang");
+            Lang.Compare(a, b, "compatpts.txt");
 
-            a.ToCsv(@"F:\Extracted\ESO\dllang.csv");
+            //a.ToCsv(@"F:\Extracted\ESO\dllang.csv");
 
 
             //Lang b = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlr2\gamedata\lang\en.lang");
@@ -208,18 +212,7 @@ namespace ESOWorldTests {
             w.Flush(); w.Close();
             */
 
-            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0data\database\", @"F:\Extracted\ESO\y0defnames\");
-            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\", @"F:\Extracted\ESO\bwdefnames\");
-            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\tudata\database\", @"F:\Extracted\ESO\tudefnames\");
-            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\database\", @"F:\Extracted\ESO\defnames\ic\");
-            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\database\", @"F:\Extracted\ESO\defnames\wf\");
-            //DefRowNameExport(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfrelease\000\", @"F:\Extracted\ESO\defnames\wfrelease\");
-            //DefRowNameExport(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlnewlife\000\", @"F:\Extracted\ESO\defnames\dlnewlife\");
-            //DefRowNameExport(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\foadata\000", @"F:\Extracted\ESO\defnames\foadata\");
-            //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\y0\world\", @"F:\Extracted\ESO\y0toc\");
-            //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\", @"F:\Extracted\ESO\bwtoc\");
-            //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\icdata\world\", @"F:\Extracted\ESO\toc\ic\");
-            //CopyToc(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\tudata\world\", @"F:\Extracted\ESO\toc\tu\");
+
             /*
 
             ListPOI();
@@ -408,7 +401,7 @@ namespace ESOWorldTests {
 
 		}
 
-        static void CreateZoneMap(string lightingPath, string maskPath, string lodPath, string outName, float scaleX = 1, float scaleY = 1, int offsetX = 0, int offsetY = 0) {
+        static void CreateZoneMap(string lightingPath, string maskPath, string lodPath, string outName) {
 
             
             MagickColor colorWater = MagickColor.FromRgb(47, 50, 56);
@@ -432,8 +425,8 @@ namespace ESOWorldTests {
 
             Console.WriteLine("loaded images...");
 
-            //lighting.Level(20, 255);
-            MagickImage finalImage = new MagickImage(MagickColors.MediumSpringGreen, imageWidth, imageHeight);
+            lighting.Level(20, 255);
+            MagickImage finalImage = new MagickImage(lodPath);
            
             MagickImage water = new MagickImage(colorWater, imageWidth, imageHeight);
             water.Composite(masks[2], CompositeOperator.CopyAlpha);
@@ -656,25 +649,29 @@ namespace ESOWorldTests {
             }
         }
 
-        static void DefRowNameExport(string folder, string outFolder) {
+        static void DefRowNameExport(string folder, string outFolder, Lang l = null) {
             if (!Directory.Exists(outFolder)) Directory.CreateDirectory(outFolder);
-            Dictionary<uint, string> defmanes = new Dictionary<uint, string>();
+            Dictionary<uint, string> defNames = new Dictionary<uint, string>();
             foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\deftypesdl.txt")) {
                 Console.WriteLine(line.Split('\t')[0]);
-                defmanes[UInt32.Parse(line.Split(' ')[0])] = line.Split(' ')[1];
+                defNames[UInt32.Parse(line.Split(' ')[0])] = line.Split(' ')[1];
             }
 
             foreach (string path in Directory.EnumerateFiles(folder, "*.EsoFileData")) {
                 if (!Path.GetFileName(path).Contains("Uncompressed")) continue;
                 ulong id = UInt64.Parse(Path.GetFileName(path).Split('_')[0], System.Globalization.NumberStyles.HexNumber);
                 uint shortID = (uint)(id & uint.MaxValue);
-                string filename = defmanes.ContainsKey(shortID) ? defmanes[shortID] + "_" + Path.GetFileNameWithoutExtension(path) : Path.GetFileNameWithoutExtension(path);
+                string filename = defNames.ContainsKey(shortID) ? defNames[shortID] + "_" + Path.GetFileNameWithoutExtension(path) : Path.GetFileNameWithoutExtension(path);
                 Console.WriteLine(filename);
-                Def d = new Def(path);
+                Def d = new Def(path); 
+                if (d.rows.Length == 0) continue;
+                Lang.Entry[] langEntryTypes = defNames.ContainsKey(shortID) && Lang.defLangEntries.ContainsKey(defNames[shortID]) ? Lang.defLangEntries[defNames[shortID]] : new Lang.Entry[0];
                 using (TextWriter w = new StreamWriter(File.Open(outFolder + filename + ".txt", FileMode.Create))) {
                     for(int i = 0; i < d.rows.Length; i++) {
                         if(d.rows[i].data.name.Length > 0)
-                        w.WriteLine(d.rows[i].data.id + "\t" + d.rows[i].data.name);
+                        w.Write(d.rows[i].data.id + " | " + d.rows[i].data.name);
+                        if (l != null) for (int entry = 0; entry < langEntryTypes.Length; entry++) if (l.HasName(d.rows[i].data.id, langEntryTypes[entry])) w.Write(" | " + l.GetName(d.rows[i].data.id, langEntryTypes[entry]));
+                        w.WriteLine();
                     }
                 }
             }

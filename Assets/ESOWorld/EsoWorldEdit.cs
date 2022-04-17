@@ -9,27 +9,41 @@ using System.Text;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
-public class EsoWorldEditorWindow : EditorWindow
+
+public class EsoWorldEdit : MonoBehaviour
 {
-    uint worldID;
-    int pathCount;
+
+    public string modelPath;
+
+
+    public string worldPath;
+    public int worldPathCount;
+
+    public string meshNamePath;
+    public string databasePath;
+
+    public uint worldID;
+
     Dictionary<ulong, string> paths;
     Dictionary<uint, string> meshnames;
+
+    public Dictionary<uint, string> worldNames;
+
     GameObject fixturePrefab;
     Material mat;
     Material rokmat;
     Material clnmat;
 
-    [MenuItem("Window/ESOWorld")]
-    static void Init() {
-        EsoWorldEditorWindow window = (EsoWorldEditorWindow)EditorWindow.GetWindow(typeof(EsoWorldEditorWindow));
-        window.Show();
-    }
-
+    //[MenuItem("Window/ESOWorld")]
+    //static void Init() {
+    //    EsoWorldEditorWindow window = (EsoWorldEditorWindow)EditorWindow.GetWindow(typeof(EsoWorldEditorWindow));
+    //    window.Show();
+    //}
+    /*
     private void OnGUI() {
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Load Paths")) {
-            paths = Util.LoadWorldFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\world");
+            paths = Util.LoadWorldFiles(@"E:\Extracted\ESO\Release\atpts\world");
             pathCount = paths.Count;
         }
         EditorGUILayout.IntField(pathCount);
@@ -56,6 +70,21 @@ public class EsoWorldEditorWindow : EditorWindow
         }
         if (GUILayout.Button("Load Water")) {
             LoadWater(worldID);
+        }
+    }
+    */
+
+    public void BuildWorldNames() {
+        worldNames = new Dictionary<uint, string>();
+        if (databasePath == null) return;
+        string defPath = Path.Combine(databasePath, "600000000000003C_Uncompressed.EsoFileData");
+        if (!File.Exists(defPath)) {
+            Debug.LogError(defPath + " does not exist");
+            return;
+        }
+        Def d = new Def(defPath);
+        foreach(var row in d.rows) {
+            worldNames[row.data.id] = row.data.name;
         }
     }
 
@@ -123,8 +152,8 @@ public class EsoWorldEditorWindow : EditorWindow
 
     void LoadWater(uint worldID) {
         GameObject waterPrefab = Resources.Load<GameObject>("WaterPrefab"); 
-        Def tilemaps = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
-        Def waterVolumes = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000045_Uncompressed.EsoFileData", typeof(DefDataWaterVolume));
+        Def tilemaps = new Def(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000044_Uncompressed.EsoFileData", typeof(DefDataWorldTileMap));
+        Def waterVolumes = new Def(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000045_Uncompressed.EsoFileData", typeof(DefDataWaterVolume));
         for (int i = 0; i < tilemaps.rows.Length; i++) {
             DefDataWorldTileMap tilemap = (DefDataWorldTileMap)tilemaps.rows[i].data;
             if (tilemap.worldID != worldID || tilemap.type != 6 || tilemap.layers.Length == 0) continue;
@@ -288,9 +317,16 @@ public class EsoWorldEditorWindow : EditorWindow
         }
     }
 
-    void GatherMeshes(uint worldID) {
-        if (paths == null)  paths = Util.LoadWorldFiles();
+    public void BuildWorldPaths() {
+        paths = Util.LoadWorldFiles(worldPath);
+        worldPathCount = paths.Count;
+    }
+    public void ImportMeshes() { ImportMeshes(worldID); }
 
+    public void ImportMeshes(uint worldID) {
+        if (paths == null) {
+            Debug.LogError("no paths"); return;
+        }
 
         HashSet<uint> models = new HashSet<uint>();
 
@@ -312,26 +348,32 @@ public class EsoWorldEditorWindow : EditorWindow
         }
         //Debug.Log(models.Count);
 
+
+
         StringBuilder args = new StringBuilder();
         int exported = 0;
         foreach(uint model in models) {
-            if (!File.Exists($@"F:\Anna\Files\Unity\esoworldedit\Assets\Resources\{model}.obj") &&
-                File.Exists($@"F:\Extracted\ESO\model\{model}.gr2")) {
-                args.Append($" \"F:\\Extracted\\ESO\\model\\{model}.gr2\"");
+            if (!File.Exists(Path.Combine(Application.dataPath,$@"Resources\{model}.obj")) &&
+                File.Exists(Path.Combine(modelPath,$"{model}.gr2"))) {
+                args.Append($" \"{Path.Combine(modelPath,$"{model}.gr2")}\"");
                 exported++;
                 if (exported >= 512) break;
             }
         }
+        if (exported == 0) {
+            Debug.Log("No need");
+            return;
+        }
         Debug.Log($"Exporting {exported} models");
         ProcessStartInfo info = new ProcessStartInfo() {
-            FileName = @"F:\Anna\Visual Studio\gr2obj\x64\Release\gr2obj.exe",
+            FileName = Path.Combine(Path.GetDirectoryName(Application.dataPath), @"res\gr2obj.exe"),
             Arguments = args.ToString()
         };
         Process gr2obj = Process.Start(info);
         gr2obj.WaitForExit();
-        foreach(string file in Directory.EnumerateFiles(@"F:\Anna\Files\Unity\esoworldedit\", "*.obj", SearchOption.TopDirectoryOnly)) {
-            if (!File.Exists($@"F:\Anna\Files\Unity\esoworldedit\Assets\Resources\{Path.GetFileName(file)}"))
-                File.Move(file, $@"F:\Anna\Files\Unity\esoworldedit\Assets\Resources\{Path.GetFileName(file)}");
+        foreach(string file in Directory.EnumerateFiles(Path.GetDirectoryName(Application.dataPath), "*.obj", SearchOption.TopDirectoryOnly)) {
+            if (!File.Exists(Path.Combine(Application.dataPath, $@"Resources\{Path.GetFileName(file)}")))
+                File.Move(file, Path.Combine(Application.dataPath, $@"Resources\{Path.GetFileName(file)}"));
             else File.Delete(file);
         }
         AssetDatabase.Refresh();
