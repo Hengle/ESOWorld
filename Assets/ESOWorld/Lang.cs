@@ -453,9 +453,9 @@ namespace ESOWorld {
             return "";
         }
 
-        public string GetName(uint id, Entry type) {
+        public string GetName(uint id, Entry type, bool returnID = true) {
             string name = GetName(((ulong)type << 32) + id);
-            return name == "" ? id.ToString() : name;
+            return (name == "" && returnID) ? id.ToString() : name;
         }
 
         public string GetLongName(ulong id) {

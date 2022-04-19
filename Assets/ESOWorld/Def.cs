@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -10,7 +11,7 @@ namespace ESOWorld {
 
         public uint version;
         public uint numRecords;
-        public uint unk;
+        public uint dataVersion;
         public DefRow[] rows;
 
         public enum DerivedStat : uint {
@@ -45,6 +46,7 @@ namespace ESOWorld {
             return id.ToString();
         }
 
+
         public Def(string path) : this(path, typeof(DefDataGeneric)) { }
 
         public Def(string path, Type dataType) {
@@ -52,17 +54,18 @@ namespace ESOWorld {
                 r.AssertUint32(4210748395, true);
                 version = r.ReadUInt32B();
                 numRecords = r.ReadUInt32B();
-                unk = r.ReadUInt32B();
+                dataVersion = r.ReadUInt32B();
 
                 int i = 0;
                 List<DefRow> rowList = new List<DefRow>((int)numRecords);
                 //while(i < numRecords && r.BaseStream.Position < r.BaseStream.Length) {
                 while (r.BaseStream.Position < r.BaseStream.Length) {
-                    rowList.Add(new DefRow(r, dataType));
+                    rowList.Add(new DefRow(r, dataType, dataVersion));
                 }
                 rows = rowList.ToArray();
             }
         }
+ 
     }
 
     public class DefRow {
@@ -71,13 +74,13 @@ namespace ESOWorld {
         public uint dataSize;
         public DefData data;
 
-        public DefRow(BinaryReader r, Type dataType) {
+        public DefRow(BinaryReader r, Type dataType, uint dataVersion) {
             r.Seek(20);
             key = r.ReadUInt32B();
             id = r.ReadUInt32B();
             dataSize = r.ReadUInt32B();
             long pos = r.BaseStream.Position;
-            data = (DefData) Activator.CreateInstance(dataType, r);
+            data = (DefData) Activator.CreateInstance(dataType, r, dataVersion);
             r.BaseStream.Seek(pos + dataSize, SeekOrigin.Begin);
         }
 
@@ -111,7 +114,7 @@ namespace ESOWorld {
 
     public class DefDataGeneric : DefData {
         //public byte[] data;
-        public DefDataGeneric(BinaryReader r) {
+        public DefDataGeneric(BinaryReader r, uint version) {
             ReadHeader(r);
             //data = r.ReadBytes((int)r.BaseStream.Length - name.Length - HEADER_SIZE_WITHOUT_NAME);
         }
@@ -138,7 +141,7 @@ namespace ESOWorld {
         public uint cellSizeY;
         public WorldTileMapLayer[] layers;
 
-        public DefDataWorldTileMap(BinaryReader r) {
+        public DefDataWorldTileMap(BinaryReader r, uint version) {
             ReadHeader(r);
             worldID = r.ReadUInt32B();
             x = r.ReadUInt32B();
@@ -157,7 +160,7 @@ namespace ESOWorld {
         public uint unk1;
         public uint unk2;
 
-        public DefDataWaterVolume(BinaryReader r) {
+        public DefDataWaterVolume(BinaryReader r, uint version) {
             ReadHeader(r);
             height = r.ReadUInt32B();
             waterTypeID = r.ReadUInt32B();
@@ -167,11 +170,23 @@ namespace ESOWorld {
     }
 
     public class DefPointOfInterest : DefData {
-        public uint type;
 
-        public DefPointOfInterest(BinaryReader r) {
+        public enum Type : uint {
+            Objective = 0,
+            Wayshrine = 1,
+            Discoverable = 2,
+            Combat = 3,
+            WorldEvent = 4,
+            PublicDungeon = 5,
+            GroupDungeon = 6,
+            Home = 7
+        }
+
+        public Type type;
+
+        public DefPointOfInterest(BinaryReader r, uint version) {
             ReadHeader(r);
-            type = r.ReadUInt32B();
+            type = (Type)r.ReadUInt32B();
         }
 
     }
@@ -182,7 +197,7 @@ namespace ESOWorld {
         public uint id3;
         public uint id4;
 
-        public DefItemPartMaterial(BinaryReader r) {
+        public DefItemPartMaterial(BinaryReader r, uint version) {
             ReadHeader(r);
             id1 = r.ReadUInt32B();
             id2 = r.ReadUInt32B();
@@ -200,7 +215,7 @@ namespace ESOWorld {
         public uint isLorebook;
         public byte hideTitle;
 
-        public DefBook(BinaryReader r) {
+        public DefBook(BinaryReader r, uint version) {
             ReadHeader(r);
             r.Seek(r.ReadUInt32B() * 8);
             monsterID = r.ReadUInt32B();
@@ -216,7 +231,7 @@ namespace ESOWorld {
     public class DefClickable : DefData {
         public uint[] books;
 
-        public DefClickable(BinaryReader r) {
+        public DefClickable(BinaryReader r, uint version) {
             ReadHeader(r);
             books = r.ReadUInt32ArrayB();
         }
@@ -270,7 +285,7 @@ namespace ESOWorld {
         public uint category;
         public uint parentSetID;
 
-        public DefSet(BinaryReader r) {
+        public DefSet(BinaryReader r, uint version) {
             ReadHeader(r);
             stats = new Stat[r.ReadUInt32B()];
             for (int i = 0; i < stats.Length; i++) stats[i] = new Stat(r);
@@ -340,13 +355,13 @@ namespace ESOWorld {
         public int offsetY;
 
 
-
-        public DefZone(BinaryReader r) {
+        public DefZone(BinaryReader r, uint version) {
             ReadHeader(r);
             r.Seek(8);
             color = new float[] { r.ReadSingle(), r.ReadSingle(), r.ReadSingle() };
             worldID = r.ReadUInt32B();
             r.Seek(14);
+            if (version > 141) r.Seek(1);
             mapID = r.ReadUInt32B();
             pois = new uint[r.ReadUInt32B()];
             for (int i = 0; i < pois.Length; i++) pois[i] = r.ReadUInt32B();
@@ -362,14 +377,13 @@ namespace ESOWorld {
             offsetX = r.ReadInt32B() / 100;
             offsetY = r.ReadInt32B() / 100;
         }
-
     }
 
     public class DefWorld : DefData {
         public uint width;
         public uint height;
 
-        public DefWorld(BinaryReader r) {
+        public DefWorld(BinaryReader r, uint version) {
             ReadHeader(r);
             width = r.ReadUInt32B();
             height = r.ReadUInt32B();
@@ -393,7 +407,7 @@ namespace ESOWorld {
         //public uint width;
         //public uint height;
 
-        public DefMap(BinaryReader r) {
+        public DefMap(BinaryReader r, uint version) {
             ReadHeader(r);
             path = r.ReadStringC(true);
             tilesX = r.ReadByte();
@@ -471,7 +485,7 @@ namespace ESOWorld {
             Companion = 11
         }
 
-        public DefQuest(BinaryReader r) {
+        public DefQuest(BinaryReader r, uint version) {
             ReadHeader(r);
             isShareable = r.ReadByte();
             r.Seek(2);

@@ -14,8 +14,66 @@ namespace ESOWorldTests {
 
         static void Main(string[] args) {
 
+            ListPOI(@"F:\Extracted\ESO\hipts\");
+
+            /*
+            uint[] hiWorlds = new uint[] {
+                1202, 1203, 1204, 1205, 1206, 1207, 1208, 1209,
+                1210, 1211, 1213, 1215, 1216, 1217, 1218, 1219,
+                1220, 1221, 1222, 1223, 1224, 1225, 1226, 1227,
+                1231, 1232, 1233, 1252, 1253
+            };
+
+            var files = LoadWorldFiles(@"F:\Extracted\ESO\hipts\world\");
+            foreach (uint id in hiWorlds) {
+                LodMontage(id, files);
+                ExportTerrainCols(id, files);
+            }
+            */
+
+            /*
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1207)));
+
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1202)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1204)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1205))); 
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1206)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1208)));
+
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1210)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1213)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1215)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1216)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1217)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1218)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1219)));
+
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1220)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1221)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1222)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1223)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1224)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1225)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1226)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1227)));
+
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1233)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1252)));
+            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1253)));
+            */
+
+            //LodMontage(1203, files);
+
+            //var files = LoadWorldFiles(@"E:\Extracted\ESO\Release\atpts\world");
+            //LodMontage(745, files);
+
             //CreateZoneMap(@"F:\Extracted\ESO\screenshots\screenshot_220129_224108.png", @"F:\Extracted\ESO\screenshots\screenshot_220129_224142.png", "", "goldcoast_base.png");
-            //DefRowNameExport(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\atpts\000", @"F:\Extracted\ESO\defnames\atpts\");
+            //DefRowNameExport(@"F:\Extracted\ESO\hipre\000", @"E:\Extracted\ESO\defnames\hipre\");
+            //DefRowNameExport(@"F:\Extracted\ESO\hipts\000", @"E:\Extracted\ESO\defnames\hipts\");
+
+            //Lang a = new Lang(@"F:\Extracted\ESO\hipts\gamedata\lang\en.lang");
+            //Lang b = new Lang(@"F:\Extracted\ESO\hipre\gamedata\lang\en.lang");
+            //Lang.Compare(a, b, "hitpslang.txt");
 
             //DefIdCheck();
 
@@ -39,10 +97,10 @@ namespace ESOWorldTests {
             //}
 
 
-            Lang a = new Lang(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\atpts\gamedata\lang\en.lang");
+            //Lang a = new Lang(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\atpts\gamedata\lang\en.lang");
             //DefRowNameExport(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\hiannounce\000\", @"F:\Extracted\ESO\defnames\hiannounce\");
-            Lang b = new Lang(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\hiannounce\gamedata\lang\en.lang");
-            Lang.Compare(a, b, "compatpts.txt");
+            //Lang b = new Lang(@"F:\Extracted\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\hiannounce\gamedata\lang\en.lang");
+            //Lang.Compare(a, b, "compatpts.txt");
 
             //a.ToCsv(@"F:\Extracted\ESO\dllang.csv");
 
@@ -631,7 +689,7 @@ namespace ESOWorldTests {
             var montage = images.Montage(new MontageSettings() { Geometry = new MagickGeometry(sectionSize), TileGeometry = new MagickGeometry((int)l.cellsX, (int)l.cellsY), Gravity = Gravity.Southwest, BackgroundColor = MagickColors.Transparent });
             //montage.BackgroundColor = MagickColors.Transparent;
             Console.WriteLine("saving...");
-            montage.Write(string.Format(@"F:\Extracted\ESO\terrain\cols\{0:0000}_cols_{1}x{2}.png", worldID, montage.Width, montage.Height));
+            montage.Write(string.Format(@"E:\Extracted\ESO\terrain\cols\{0:0000}_cols_{1}x{2}.png", worldID, montage.Width, montage.Height));
             //int resize = Math.Max(NextPow2(montage.Width) + 1, NextPow2(montage.Height) + 1);
             //montage.Extent(resize, resize, Gravity.Southwest);
 
@@ -652,7 +710,7 @@ namespace ESOWorldTests {
         static void DefRowNameExport(string folder, string outFolder, Lang l = null) {
             if (!Directory.Exists(outFolder)) Directory.CreateDirectory(outFolder);
             Dictionary<uint, string> defNames = new Dictionary<uint, string>();
-            foreach (string line in File.ReadAllLines(@"F:\Extracted\ESO\deftypesdl.txt")) {
+            foreach (string line in File.ReadAllLines(@"E:\Extracted\ESO\deftypesdl.txt")) {
                 Console.WriteLine(line.Split('\t')[0]);
                 defNames[UInt32.Parse(line.Split(' ')[0])] = line.Split(' ')[1];
             }
@@ -756,36 +814,37 @@ namespace ESOWorldTests {
             }
         }
 
-        static void ListPOI() {
+        static void ListPOI(string filePath) {
             Dictionary<uint, string> poiNames = new Dictionary<uint, string>();
             Dictionary<uint, string> objectiveText = new Dictionary<uint, string>();
             Dictionary<uint, string> objectiveCompleteText = new Dictionary<uint, string>();
 
-            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang");
+            Lang l = new Lang(Path.Combine(filePath, @"gamedata\lang\en.lang"));
 
-            /*
-            using (TextReader r = new StreamReader(File.OpenRead(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang.csv"))) {
-                while(r.Peek() != -1) {
-                    string[] words = r.ReadLine().Split(new char[] { '"' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (words[0] == "10860933") {
-                        poiNames[UInt32.Parse(words[4])] = words[8];
-                        //Console.WriteLine(words[2] + words[4]);
-                    } else if (words[0] == "129979412") {
-                        objectiveText[UInt32.Parse(words[4])] = words[8];
-                        //Console.WriteLine(words[2] + words[4]);
-                    } else if (words[0] == "108566804") {
-                        objectiveCompleteText[UInt32.Parse(words[4])] = words[8];
-                        //Console.WriteLine(words[2] + words[4]);
-                    } 
+            Dictionary<uint, uint> poiZoneIds = new Dictionary<uint, uint>();
+
+            Def zones = new Def(Path.Combine(filePath, @"000\6000000000000032_Uncompressed.EsoFileData"), typeof(DefZone));
+            for (int i = 0; i < zones.rows.Length; i++) {
+                var zone = (DefZone)zones.rows[i].data;
+                Console.WriteLine($"{zone.worldID} | {l.GetName(zone.id, Lang.Entry.Zone)}");
+                continue;
+
+
+                foreach (uint poi in zone.pois) {
+                    poiZoneIds[poi] = zone.id;
+
+
                 }
             }
-            */
-            Def pois = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\600000000000004A_Uncompressed.EsoFileData", typeof(DefPointOfInterest));
+            return;
+
+            Def pois = new Def(Path.Combine(filePath, @"000\600000000000004A_Uncompressed.EsoFileData"), typeof(DefPointOfInterest));
             using (TextWriter w = new StreamWriter(File.Open("poitext.csv", FileMode.Create))) {
                 for(int i = 0; i < pois.rows.Length; i++) {
                     var poi = (DefPointOfInterest)pois.rows[i].data;
                     uint id = poi.id;
-                    w.WriteLine($"{id}\t{poi.type}\t{poi.name}\t{l.GetName(id, Lang.Entry.PointOfInterest)}\t{l.GetName(id, Lang.Entry.Objective_Text)}\t{l.GetName(id, Lang.Entry.Objective_CompleteText)}");
+                    uint zoneId = poiZoneIds.ContainsKey(id) ? poiZoneIds[poi.id] : 0;
+                    w.WriteLine($"{id}\t{poi.type}\t{zoneId}\t{l.GetName(zoneId, Lang.Entry.Zone)}\t{poi.name}\t{l.GetName(id, Lang.Entry.PointOfInterest)}\t{l.GetName(id, Lang.Entry.Objective_Text, false)}\t{l.GetName(id, Lang.Entry.Objective_CompleteText, false)}");
                     //if (objectiveText.ContainsKey(id) && objectiveCompleteText.ContainsKey(id)) {
                     //    w.WriteLine($"{id}\t{poi.type}\t{poiNames[id]}\t{objectiveText[id]}\t{objectiveCompleteText[id]}");
                     //}
@@ -905,9 +964,9 @@ namespace ESOWorldTests {
             return heights;
         }
 
-        static Dictionary<UInt64, string> LoadWorldFiles() {
+        static Dictionary<UInt64, string> LoadWorldFiles(string folder) {
             Dictionary<UInt64, string> worldFiles = new Dictionary<ulong, string>();
-            foreach (string path in Directory.EnumerateFiles(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsworld\", "*", SearchOption.AllDirectories))
+            foreach (string path in Directory.EnumerateFiles(folder, "*", SearchOption.AllDirectories))
                 if (!path.Contains(".xv4")) worldFiles[UInt64.Parse(Path.GetFileNameWithoutExtension(path), System.Globalization.NumberStyles.HexNumber)] = path;
             Console.WriteLine("loaded paths");
             return worldFiles;
@@ -932,7 +991,7 @@ namespace ESOWorldTests {
             //MontageSettings montageSettings = new MontageSettings() { Geometry = new MagickGeometry(512, 512, 0, 0) };
             var montage = images.Montage(new MontageSettings() { Geometry = new MagickGeometry(512), TileGeometry = new MagickGeometry((int)l.cellsX, (int)l.cellsY) });
             Console.WriteLine("saving...");
-            montage.Write(string.Format(@"F:\Extracted\ESO\lodtex\{0:0000}_lod_diffuse.bmp", worldID));
+            montage.Write(string.Format(@"E:\Extracted\ESO\lodtex\{0:0000}_lod_diffuse.bmp", worldID));
             for (int i = images.Count - 1; i >= 0; i--) images[i].Dispose();
             images.Dispose();
 
