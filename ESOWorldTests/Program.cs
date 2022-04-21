@@ -14,7 +14,10 @@ namespace ESOWorldTests {
 
         static void Main(string[] args) {
 
-            ListPOI(@"F:\Extracted\ESO\hipts\");
+            //ListPOI(@"F:\Extracted\ESO\hipts\");
+            //ExportZoneLoadscreens(@"F:\Extracted\ESO\hipts\");
+            ZoneLoadscreenMontage(@"F:\Extracted\ESO\hipts\");
+
 
             /*
             uint[] hiWorlds = new uint[] {
@@ -31,36 +34,6 @@ namespace ESOWorldTests {
             }
             */
 
-            /*
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1207)));
-
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1202)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1204)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1205))); 
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1206)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1208)));
-
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1210)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1213)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1215)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1216)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1217)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1218)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1219)));
-
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1220)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1221)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1222)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1223)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1224)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1225)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1226)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1227)));
-
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1233)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1252)));
-            Console.WriteLine(string.Format("{0:X}", Util.WorldTocID(1253)));
-            */
 
             //LodMontage(1203, files);
 
@@ -169,14 +142,7 @@ namespace ESOWorldTests {
             }
             *//*
             
-            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang");
-            Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
-            Def worlds = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\600000000000003C_Uncompressed.EsoFileData");
-            for (int i = 0; i < zones.rows.Length; i++) { //zones.rows.Length
-                DefZone zone = (DefZone)zones.rows[i].data;
-                Console.WriteLine($"{zone.id}|{worlds.Get(zone.worldID).id}|{zone.loadingScreenID}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}|{l.GetName(zone.id, Lang.Entry.ZoneLoadScreenText)}");
-                //Console.WriteLine($"{zone.id}|{l.GetName(zone.id, Lang.Entry.Zone)}|{l.GetName(zone.id, Lang.Entry.ZoneLoadScreenText)});
-            }
+
             */
 
             /*
@@ -242,19 +208,10 @@ namespace ESOWorldTests {
             //LodMontage(1193, paths);
 
 
-            /*
-            Def quests = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\600000000000000A_Uncompressed.EsoFileData", typeof(DefQuest));
 
-            TextWriter w = new StreamWriter(File.Open("quests.csv", FileMode.Create));
-            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang");
-            for(uint i = 0; i < quests.rows.Length; i++) {
-                DefQuest quest = (DefQuest)quests.rows[i].data;
-                if(quest.name != "")
-                w.WriteLine($"{quest.id}|{quest.name}|{l.GetName(quest.id, Lang.Entry.Quest)}|{quest.zoneID}|{l.GetName(quest.zoneID, Lang.Entry.Zone)}|{quest.poiID}|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}|{quest.type}|{quest.repeatableType}|{quest.icon}");
-               // if (quest.poiID != 0) w.Write($"|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}");
-            }
-            w.Flush(); w.Close();
-            */
+
+
+
 
             /*
             Def quests = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\badlandsdata3\000\a\600000000000000A_Uncompressed.EsoFileData", typeof(DefQuest));
@@ -446,6 +403,31 @@ namespace ESOWorldTests {
 
         }
 
+        static void ListQuests(string path) {
+            Def quests = new Def(Path.Combine(path, @"000\600000000000000A_Uncompressed.EsoFileData"), typeof(DefQuest));
+
+            TextWriter w = new StreamWriter(File.Open("quests.csv", FileMode.Create));
+            Lang l = new Lang(Path.Combine(path, @"gamedata\lang\en.lang"));
+            for (uint i = 0; i < quests.rows.Length; i++) {
+                DefQuest quest = (DefQuest)quests.rows[i].data;
+                if (quest.name != "")
+                    w.WriteLine($"{quest.id}|{quest.name}|{l.GetName(quest.id, Lang.Entry.Quest)}|{quest.zoneID}|{l.GetName(quest.zoneID, Lang.Entry.Zone)}|{quest.poiID}|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}|{quest.type}|{quest.repeatableType}|{quest.icon}");
+                // if (quest.poiID != 0) w.Write($"|{l.GetName(quest.poiID, Lang.Entry.PointOfInterest)}");
+            }
+            w.Flush(); w.Close();
+        }
+
+        static void ListZones(string path) {
+            Lang l = new Lang(Path.Combine(path, @"gamedata\lang\en.lang"));
+            Def zones = new Def(Path.Combine(path, @"000\6000000000000032_Uncompressed.EsoFileData"), typeof(DefZone));
+            Def worlds = new Def(Path.Combine(path, @"000\600000000000003C_Uncompressed.EsoFileData"));
+            for (int i = 0; i < zones.rows.Length; i++) { //zones.rows.Length
+                DefZone zone = (DefZone)zones.rows[i].data;
+                Console.WriteLine($"{zone.id}|{worlds.Get(zone.worldID).id}|{zone.loadingScreenID}|{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{worlds.GetName(zone.parentWorldID)}|{l.GetName(zone.id, Lang.Entry.Zone_LoadScreenText)}");
+                //Console.WriteLine($"{zone.id}|{l.GetName(zone.id, Lang.Entry.Zone)}|{l.GetName(zone.id, Lang.Entry.ZoneLoadScreenText)});
+            }
+        }
+
 
         static void CreateHiddenWorldspaceList(string mnfdump, string output) {
             using(TextWriter writer = new StreamWriter(File.Create(output))) {
@@ -570,21 +552,106 @@ namespace ESOWorldTests {
             if (name == "") name = grass ? id.ToString() + "_grass" : id.ToString() + "_fixtures";
             image.Write($"{name}.png");
         }
-        static void ExportZoneLoadscreens() {
+
+        static void ZoneLoadscreenMontage(string path) {
+
+
+            Dictionary<uint, string> zosft = new Dictionary<uint, string>();
+            foreach (string line in File.ReadAllLines(Path.Combine(path, "zosft.txt"))) {
+                var words = line.Split('|');
+                zosft[uint.Parse(words[0])] = words[1];
+            }
+
+            int cellWidth = 336;
+            int cellHeight = 210;
+            int cellsX = 8;
+            Lang l = new Lang(Path.Combine(path, @"gamedata\lang\en.lang"));
+            Def zones = new Def(Path.Combine(path, @"000\6000000000000032_Uncompressed.EsoFileData"), typeof(DefZone));
+            MagickImage image = new MagickImage(MagickColors.Black, cellWidth * cellsX, cellHeight * (zones.rows.Length / cellsX + 1));
+
+            Console.WriteLine($"full image is {image.Width}x{image.Height}");
+
+            //MagickImage zero = new MagickImage();
+            int pos = 0;
+
+
+            for (int i = 0; i < zones.rows.Length; i++) { //zones.rows.Length
+
+                //if (i > 64) break;
+
+                DefZone zone = (DefZone)zones.rows[i].data;
+                //if (zone.loadingScreenID == 0) continue;
+
+                string zosftPath = " ";
+                if (zosft.ContainsKey(zone.loadingScreenID)) {
+                    zosftPath = Path.GetFileNameWithoutExtension(zosft[zone.loadingScreenID]).Replace("loadscreen_", "");
+                }
+
+                /*
+
+                string loadscreenPath = Path.Combine(path, $@"loadscreen\small\{zone.loadingScreenID}.png");
+                if (File.Exists(loadscreenPath)) {
+                    MagickImage loadscreen = new MagickImage(loadscreenPath);
+                    image.Draw(new Drawables().Composite(cellWidth * (pos % cellsX), cellHeight * (pos / cellsX), loadscreen));
+                }
+
+
+
+                //MagickImage loadscreen = zone.loadingScreenID != 0 ?
+                //    new MagickImage($@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\loadscreen\small\{zone.loadingScreenID}.png") :
+                //    zero;
+
+
+
+                image.Draw(new Drawables()
+                    .FontPointSize(20)
+                    .Font("Arial", FontStyleType.Any, FontWeight.Bold, FontStretch.Any)
+                    .Gravity(Gravity.Northwest)
+                    .FillColor(MagickColors.Black)
+                    .StrokeColor(MagickColors.Black)
+                    .StrokeWidth(5)
+                    .Text(cellWidth * (pos % cellsX) + 8, cellHeight * (pos / cellsX) + 8, l.GetName(zone.id, Lang.Entry.Zone))
+                    .FontPointSize(16)
+                    .Text(cellWidth * (pos % cellsX) + 8, cellHeight * (pos / cellsX) + 35, zosftPath)
+                );
+
+                image.Draw(new Drawables()
+                    .FontPointSize(20)
+                    .Font("Arial", FontStyleType.Any, FontWeight.Bold, FontStretch.Any)
+                    .Gravity(Gravity.Northwest)
+                    .FillColor(MagickColors.White)
+                    .Text(cellWidth * (pos % cellsX) + 8, cellHeight * (pos / cellsX) + 8, l.GetName(zone.id, Lang.Entry.Zone))
+                    .FontPointSize(16)
+                    .Text(cellWidth * (pos % cellsX) + 8, cellHeight * (pos / cellsX) + 35, zosftPath)
+                );
+                */
+
+                Console.WriteLine($"{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{zosftPath}");
+                pos++;
+            }
+            //image.Write("loadscreens.tga");
+        }
+
+        static void ZoneLoadscreenMontageOld(string path) {
             int cellHeight = 66;
             int cellWidth = 433;
             int cellsY = 64;
-            Lang l = new Lang(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\gamedata\lang\en.lang");
-            Def zones = new Def(@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\dlpts\000\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
+            Lang l = new Lang(Path.Combine(path, @"gamedata\lang\en.lang"));
+            Def zones = new Def(Path.Combine(path, @"000\6000000000000032_Uncompressed.EsoFileData"), typeof(DefZone));
             MagickImage image = new MagickImage(MagickColors.Black, cellWidth * (zones.rows.Length / cellsY + 1), cellHeight * cellsY);
             //MagickImage zero = new MagickImage();
             int pos = 0;
             
+            
             for (int i = 0; i < zones.rows.Length; i++) { //zones.rows.Length
                 DefZone zone = (DefZone)zones.rows[i].data;
                 if (zone.loadingScreenID == 0) continue;
-                MagickImage loadscreen = new MagickImage($@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\loadscreen\small\{zone.loadingScreenID}.png");
-                loadscreen.Resize(105, 66);
+                
+                string loadscreenPath = Path.Combine(path, $@"loadscreen\small\{zone.loadingScreenID}.png");
+                MagickImage loadscreen;
+                if (File.Exists(loadscreenPath)) loadscreen = new MagickImage(loadscreenPath);
+                else loadscreen = new MagickImage(MagickColors.Black, 1, 1);
+                //loadscreen.Resize(105, 66);
                 //MagickImage loadscreen = zone.loadingScreenID != 0 ?
                 //    new MagickImage($@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\loadscreen\small\{zone.loadingScreenID}.png") :
                 //    zero;
