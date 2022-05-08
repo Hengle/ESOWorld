@@ -226,11 +226,13 @@ public class EsoWorldEdit : MonoBehaviour
 
         //if (meshnames == null) {
         meshnames = new Dictionary<uint, string>();
-            foreach (string line in File.ReadAllLines(@"E:\Anna\Anna\Visual Studio\gr2obj\gr2obj\models.txt")) {
-                string[] words = line.Split('\t');
-                if (words.Length < 2) meshnames[UInt32.Parse(words[0])] = "null";
-                else meshnames[UInt32.Parse(words[0])] = words[1];
-            }
+        foreach (string line in File.ReadAllLines(@"E:\Anna\Anna\Visual Studio\gr2obj\gr2obj\models.txt")) {
+            int pos = line.IndexOf('\t');
+            if (pos == -1) continue;
+            uint id = UInt32.Parse(line.Substring(0, pos));
+            string name = line.Substring(pos, line.Length - pos).Replace('\t', '|');
+            meshnames[id] = name;
+        }
        //}
         
         Transform worldObj = new GameObject(worldID.ToString()).transform;
@@ -294,8 +296,15 @@ public class EsoWorldEdit : MonoBehaviour
         Material rokmat = Resources.Load<Material>("ROKMat");
 
         for (int i = 0; i < fixtures.fixtures.Length; i++) {
+
+            Material matToUse = mat;
+
+
             if (meshnames.ContainsKey(fixtures.fixtures[i].model) && ignoreVeg) {
-                if (meshnames[fixtures.fixtures[i].model].StartsWith("VEG_") || meshnames[fixtures.fixtures[i].model].StartsWith("TRE_")) continue;
+                string name = meshnames[fixtures.fixtures[i].model];
+                if (name.Contains("|VEG_") || name.Contains("|TRE_")) continue;
+                if (name.Contains("|ROK_") || name.Contains("|PFX_ROK") || (name.Contains("|CAV_") && !name.Contains("|CAV_MIN"))) matToUse = rokmat;
+                else if (name.Contains("|CLN_") || name.Contains("YellowBox")) matToUse = clnmat;
             }
             var prefab = Resources.Load(fixtures.fixtures[i].model.ToString());
             if (prefab == null) prefab = fixturePrefab;
@@ -306,21 +315,10 @@ public class EsoWorldEdit : MonoBehaviour
                 (float)(fixtures.fixtures[i].fixture.rotY * -180 / Math.PI + 180d),
                 (float)(fixtures.fixtures[i].fixture.rotZ * -180 / Math.PI));
             //o.name = fixtures.fixtures[i].fixture.id.ToString();
-            o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? fixtures.fixtures[i].fixture.id.ToString() : $"{fixtures.fixtures[i].fixture.id}_UNK{fixtures.fixtures[i].model}";
+            o.name = fixtures.fixtures[i].model.ToString();
+            //o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? fixtures.fixtures[i].model.ToString() : $"{fixtures.fixtures[i].fixture.id}_UNK{fixtures.fixtures[i].model}";
             //o.name = meshnames.ContainsKey(fixtures.fixtures[i].model) ? $"{meshnames[fixtures.fixtures[i].model]}_{fixtures.fixtures[i].id}" : $"UNKNOWN_{fixtures.fixtures[i].id}";
-            foreach (var renderer in o.GetComponentsInChildren<MeshRenderer>()) {
-                if (renderer.gameObject.name.StartsWith("CLN_")) {
-                    renderer.sharedMaterial = clnmat;
-                    for (int child = 0; child < renderer.transform.childCount; child++) renderer.transform.GetChild(child).gameObject.SetActive(false);
-                } else if (renderer.gameObject.name.StartsWith("ROK_")
-                        || renderer.gameObject.name.StartsWith("PFX_ROK_")
-                        || (renderer.gameObject.name.StartsWith("CAV_") && !o.name.StartsWith("CAV_MIN")))
-                    renderer.sharedMaterial = rokmat;
-                else {
-                    renderer.sharedMaterial = mat;
-                    if (renderer.gameObject.name.StartsWith("PFX_")) for (int child = 0; child < renderer.transform.childCount; child++) renderer.transform.GetChild(child).gameObject.SetActive(false);
-                }
-            }
+            foreach (var renderer in o.GetComponentsInChildren<MeshRenderer>()) renderer.sharedMaterial = matToUse;
         }
     }
 
@@ -360,11 +358,14 @@ public class EsoWorldEdit : MonoBehaviour
         StringBuilder args = new StringBuilder();
         int exported = 0;
         foreach(uint model in models) {
-            if (!File.Exists(Path.Combine(Application.dataPath,$@"Resources\{model}.obj")) &&
-                File.Exists(Path.Combine(modelPath,$"{model}.gr2"))) {
-                args.Append($" \"{Path.Combine(modelPath,$"{model}.gr2")}\"");
-                exported++;
-                if (exported >= 512) break;
+            if (!File.Exists(Path.Combine(Application.dataPath, $@"Resources\{model}.obj"))) {
+                if (File.Exists(Path.Combine(modelPath, $"{model}.gr2"))) {
+                    args.Append($" \"{Path.Combine(modelPath, $"{model}.gr2")}\"");
+                    exported++;
+                    if (exported >= 512) break;
+                } else {
+                    Debug.LogWarning($"{model}.gr2 missing");
+                }
             }
         }
         if (exported == 0) {

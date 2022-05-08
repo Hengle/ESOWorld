@@ -587,21 +587,13 @@ namespace ESOWorldTests {
                     zosftPath = Path.GetFileNameWithoutExtension(zosft[zone.loadingScreenID]).Replace("loadscreen_", "");
                 }
 
-                /*
+                
 
                 string loadscreenPath = Path.Combine(path, $@"loadscreen\small\{zone.loadingScreenID}.png");
                 if (File.Exists(loadscreenPath)) {
                     MagickImage loadscreen = new MagickImage(loadscreenPath);
                     image.Draw(new Drawables().Composite(cellWidth * (pos % cellsX), cellHeight * (pos / cellsX), loadscreen));
                 }
-
-
-
-                //MagickImage loadscreen = zone.loadingScreenID != 0 ?
-                //    new MagickImage($@"F:\Junk\Backup\BethesdaGameStudioUtils\esoapps\EsoExtractData\x64\Release\wfpts\loadscreen\small\{zone.loadingScreenID}.png") :
-                //    zero;
-
-
 
                 image.Draw(new Drawables()
                     .FontPointSize(20)
@@ -624,7 +616,7 @@ namespace ESOWorldTests {
                     .FontPointSize(16)
                     .Text(cellWidth * (pos % cellsX) + 8, cellHeight * (pos / cellsX) + 35, zosftPath)
                 );
-                */
+                
 
                 Console.WriteLine($"{zone.name}|{l.GetName(zone.id, Lang.Entry.Zone)}|{zosftPath}");
                 pos++;
