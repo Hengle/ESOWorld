@@ -226,7 +226,7 @@ public class EsoWorldEdit : MonoBehaviour
 
         //if (meshnames == null) {
         meshnames = new Dictionary<uint, string>();
-        foreach (string line in File.ReadAllLines(@"E:\Anna\Anna\Visual Studio\gr2obj\gr2obj\models.txt")) {
+        foreach (string line in File.ReadAllLines(@"E:\Anna\Anna\Visual Studio\gr2obj\x64\Release\models.txt")) {
             int pos = line.IndexOf('\t');
             if (pos == -1) continue;
             uint id = UInt32.Parse(line.Substring(0, pos));

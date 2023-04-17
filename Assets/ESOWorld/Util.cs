@@ -44,6 +44,11 @@ namespace ESOWorld {
             return string.Format("{0:X16}", WorldCellID(worldID, layerID, cellX, cellY));
         }
 
+        public static string WorldTocFilename(uint worldID) {
+            return string.Format("{0:X16}", WorldTocID(worldID));
+        }
+
+
 
         public static string WorldFileDesc(ulong id) {
             //return string.Format("{0:X}", id >> 112);

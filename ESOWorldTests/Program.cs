@@ -13,10 +13,71 @@ namespace ESOWorldTests {
         }
 
         static void Main(string[] args) {
+            Console.WriteLine(Util.WorldTocFilename(1302));
+            Console.WriteLine(Util.WorldTocFilename(1303));
+            return;
+
+            //Console.WriteLine(Util.WorldCellFilename(974, 0, 3, 3)); return;
 
             //ListPOI(@"F:\Extracted\ESO\hipts\");
             //ExportZoneLoadscreens(@"F:\Extracted\ESO\hipts\");
-            ZoneLoadscreenMontage(@"F:\Extracted\ESO\hipts\");
+            //ZoneLoadscreenMontage(@"F:\Extracted\ESO\hipts\");
+
+            ComposeMaps(@"F:\Extracted\ESO\ncpts\art\maps\tamriel"); return;
+
+
+            Lang langn = new Lang(@"F:\Extracted\ESO\ncpts\gamedata\lang\en.lang");
+            //Lang lang = new Lang(@"F:\Extracted\ESO\sfpts\gamedata\lang\en.lang");
+            //Lang.Compare(langn, lang, "ncptslang.txt"); return;
+
+            //lang.ToCsv("ncprelang.txt"); return;
+            Def zones = new Def(@"F:\Extracted\ESO\ncpts\000\6000000000000032_Uncompressed.EsoFileData", typeof(DefZone));
+            //Lang lang = new Lang(@"F:\Extracted\ESO\fspts\gamedata\lang\en.lang");
+            for (int i = 0; i < zones.rows.Length; i++) {
+                DefZone zone = (DefZone)zones.rows[i].data;
+                Console.WriteLine($"{zone.worldID}|{zone.id}|{langn.GetName(zone.id, Lang.Entry.Zone)}");
+            }
+            return;
+
+            //CreateHiddenWorldspaceList(@"E:\Extracted\ESO\Release\ncpremnf.txt", "ncprehiddenworlds.txt"); return;
+
+
+            uint[] ncWorlds = new uint[] {
+                1278, 1279, 
+                1280, 1281, 1282, 1283, 1284, 1285, 1286, 1287, 1288, 1289, 
+                1290, 1291, 1292, 1293, 1294, 1295, 1296, 1297, 1298, 1299, 
+                1300, 1301, 1302, 1303, 1304, 1305, 1306,             1309, 
+                1310, 1311, 1312, 1313, 1314,       1316, 
+                      1321, 1322, 1323, 1324
+            };
+
+
+            uint[] fsWorlds = new uint[] {
+                1249, 
+                1250,       1252, 1253, 1254, 1255, 1256, 1257, 1258, 1259, 
+                1260, 1261, 1262, 1263, 1264, 1265, 1266, 1267, 1268, 1269,
+                1270, 1271, 1272,       1274, 1275, 1276
+            };
+
+            var files = LoadWorldFiles(@"F:\Extracted\ESO\ncpts\world\");
+            foreach (uint id in fsWorlds) {
+                LodMontage(id, files);
+                ExportTerrainCols(id, files);
+            }
+            return;
+
+
+
+
+
+            return;
+
+            Lang b = new Lang(@"F:\Extracted\ESO\fspts\gamedata\lang\en.lang");
+            Lang a = new Lang(@"F:\Extracted\ESO\hipts\gamedata\lang\en.lang");
+            Lang.Compare(b, a, @"F:\Extracted\ESO\fspts\langcomp.txt");
+
+            //DefRowNameExport(@"E:\Extracted\ESO\Release\ldpts\000", @"E:\Extracted\ESO\defnames\ldpts\");
+            //DefRowNameExport(@"F:\Extracted\ESO\hipts\000", @"E:\Extracted\ESO\defnames\hipts\");
 
 
             /*
@@ -41,8 +102,6 @@ namespace ESOWorldTests {
             //LodMontage(745, files);
 
             //CreateZoneMap(@"F:\Extracted\ESO\screenshots\screenshot_220129_224108.png", @"F:\Extracted\ESO\screenshots\screenshot_220129_224142.png", "", "goldcoast_base.png");
-            //DefRowNameExport(@"F:\Extracted\ESO\hipre\000", @"E:\Extracted\ESO\defnames\hipre\");
-            //DefRowNameExport(@"F:\Extracted\ESO\hipts\000", @"E:\Extracted\ESO\defnames\hipts\");
 
             //Lang a = new Lang(@"F:\Extracted\ESO\hipts\gamedata\lang\en.lang");
             //Lang b = new Lang(@"F:\Extracted\ESO\hipre\gamedata\lang\en.lang");
@@ -428,6 +487,48 @@ namespace ESOWorldTests {
             }
         }
 
+
+        static void ComposeMaps(string folder) {
+            var mapTextures = new Dictionary<string, Dictionary<int, string>>();
+            foreach(string file in Directory.EnumerateFiles(folder, "*.dds")) {
+                string filename = Path.GetFileNameWithoutExtension(file);
+                if (filename.EndsWith("blob")) continue;
+                int underspace = filename.LastIndexOf('_');
+                if (!int.TryParse(filename.Substring(underspace + 1), out int number)) continue;
+                string name = filename.Substring(0, underspace);
+                Console.WriteLine(name + " | " + number.ToString());
+
+                if (!mapTextures.ContainsKey(name)) 
+                    mapTextures[name] = new Dictionary<int, string>();
+                mapTextures[name][number] = file;
+               
+        }
+
+            foreach(string map in mapTextures.Keys) {
+
+                int size = mapTextures[map].Count;
+
+                for(int i = 1; i < 32; i++) {
+                    if(i * i == size) {
+                        Console.Write(map);
+
+                        MagickImageCollection images = new MagickImageCollection();
+                        for (int img = 0; img < i * i; img++) {
+                            if (mapTextures[map].ContainsKey(img))
+                                images.Add(mapTextures[map][img]);
+                            else
+                                images.Add(new MagickImage(MagickColors.Black, 1, 1));
+
+                        }
+
+                        MontageSettings montageSettings = new MontageSettings(){ Geometry = new MagickGeometry(images[0].Width), TileGeometry = new MagickGeometry(i, i)};
+                        var montage = images.Montage(montageSettings);
+                        Console.WriteLine(" Writing");
+                        montage.Write(map + ".png");
+                    } 
+                }
+            }
+        }
 
         static void CreateHiddenWorldspaceList(string mnfdump, string output) {
             using(TextWriter writer = new StreamWriter(File.Create(output))) {
