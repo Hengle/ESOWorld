@@ -91,46 +91,58 @@ public class EsoWorldEdit : MonoBehaviour
         Toc t = Toc.Read(paths[Util.WorldTocID(worldID)]);
         Layer l = t.layers[1];
 
+
         int terrainRes = Math.Max(Util.NextPow2(64 * l.cellsX) + 1, Util.NextPow2(64 * l.cellsY) + 1);
-        if(terrainRes > 4097) {
-            Debug.LogError($"TERRAIN TOO BIG {terrainRes}");
-            return;
-		}
+        //if(terrainRes > 4097) {
+        //    Debug.LogError($"TERRAIN TOO BIG {l.cellsX}x{l.cellsY} {terrainRes}");
+        //    return;
+        //}
 
-        float[,] fullHeights = new float[terrainRes, terrainRes];
+        for (uint yTile = 0; yTile < terrainRes - 1; yTile += 4096) {
+            for(uint xTile = 0; xTile < terrainRes - 1; xTile += 4096) {
+                int tileRes = Math.Min(4097, terrainRes);
+                float[,] tileHeights = new float[tileRes, tileRes];
 
-        float maxHeight = 0;
-        for (uint y = 0; y < l.cellsY; y++) {
-            for (uint x = 0; x < l.cellsX; x++) {
-                if (paths.ContainsKey(Util.WorldCellID(worldID, 1, x, y))) {
-                    float[] heights = ReadTerrainHeights(paths[Util.WorldCellID(worldID, 1, x, y)]);
-                    for (int u = 0; u < 64; u++) {
-                        for (int v = 0; v < 64; v++) {
-                            //aaaaaaaaaaahhhhh
-                            fullHeights[terrainRes - u - 1 - y * 64, v + x * 64] = heights[u + v * 65];
-                            if (heights[u + v * 65] > maxHeight) maxHeight = heights[u + v * 65];
+
+                float maxHeight = 0;
+
+                for (uint y = 0; y <  Math.Min(l.cellsY, 64); y++) {
+                    for (uint x = 0; x < Math.Min(l.cellsX, 64); x++) {
+                        if (paths.ContainsKey(Util.WorldCellID(worldID, 1, x + xTile * 8, y + yTile * 8))) {
+                            float[] heights = ReadTerrainHeights(paths[Util.WorldCellID(worldID, 1, x + xTile * 8, y + yTile * 8)]);
+                            for (int u = 0; u < 64; u++) {
+                                for (int v = 0; v < 64; v++) {
+                                    //aaaaaaaaaaahhhhh
+                                    tileHeights[tileRes - u - 1 - y * 64, v + x * 64] = heights[u + v * 65];
+                                    if (heights[u + v * 65] > maxHeight) maxHeight = heights[u + v * 65];
+                                }
+                            }
                         }
                     }
                 }
+
+                //normalise heights
+                for (int x = 0; x < tileRes; x++) {
+                    for (int y = 0; y < tileRes; y++) {
+                        tileHeights[x, y] = tileHeights[x, y] / maxHeight;
+                    }
+                }
+
+
+                TerrainData terrainData = new TerrainData();
+                terrainData.heightmapResolution = tileRes;
+                terrainData.size = new Vector3(tileRes * 100 / 64, maxHeight, tileRes * 100 / 64);
+                terrainData.SetHeights(0, 0, tileHeights);
+
+                Terrain terrain = new GameObject($"{worldID}_TERRAIN_{xTile}_{yTile}").AddComponent<Terrain>();
+                terrain.materialTemplate = Resources.Load<Material>("ROKMat");
+                terrain.terrainData = terrainData;
+                terrain.transform.position = new Vector3(xTile * 800, 0, (yTile * 800 + tileRes * 100) / -64);
+
             }
         }
 
-        //normalise heights
-        for(int x = 0; x < terrainRes; x++) {
-            for (int y = 0; y < terrainRes; y++) {
-                fullHeights[x, y] = fullHeights[x, y] / maxHeight;
-            }
-        }
 
-        TerrainData terrainData = new TerrainData();
-        terrainData.heightmapResolution = terrainRes;
-        terrainData.size = new Vector3(terrainRes * 100 / 64, maxHeight, terrainRes * 100 / 64);
-        terrainData.SetHeights(0, 0, fullHeights);
-
-        Terrain terrain = new GameObject($"{worldID}_TERRAIN").AddComponent<Terrain>();
-        terrain.materialTemplate = Resources.Load<Material>("ROKMat");
-        terrain.terrainData = terrainData;
-        terrain.transform.position = new Vector3(0, 0, terrainRes * 100 / -64);
     }
 
     static float[] ReadTerrainHeights(string path) {

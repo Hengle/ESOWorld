@@ -13,7 +13,14 @@ namespace ESOWorldTests {
         }
 
         static void Main(string[] args) {
-            Console.WriteLine(Util.WorldTocFilename(1302));
+
+            var afiles = LoadWorldFiles(@"F:\Extracted\ESO\ncpts\053\");
+            LodMontage(1303, afiles);
+            ExportTerrainCols(1303, afiles);
+
+            return;
+
+                    Console.WriteLine(Util.WorldTocFilename(1302));
             Console.WriteLine(Util.WorldTocFilename(1303));
             return;
 
